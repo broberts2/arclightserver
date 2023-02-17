@@ -102,3 +102,12 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Ignore generated media file
+media
+
+# Ignore generated scripts files
+scripts
+
+# Ignore active integrations
+integrations.json

@@ -1,11 +1,3 @@
-const restrictions = (io: any, socket: any, msg: any) => {
-	if (msg.username === "administrator")
-		return io.to(socket.id).emit(`servererror`, {
-			msg: `The username 'administrator' is reserved and cannot be set.`,
-			code: 403,
-		});
-};
-
 export default (
 		modules: { [key: string]: any },
 		name: string,
@@ -14,19 +6,15 @@ export default (
 	(io: { [key: string]: any }, socket: { [key: string]: any }) =>
 	async (msg: { [key: string]: any }) => {
 		try {
-			if (msg._model === "user" && msg.username === "administrator") {
-				delete msg.username;
-				delete msg.profiles;
-			}
-			if (restrictions(io, socket, msg)) return;
-			const updateObj: { [key: string]: any } = {};
-			Object.keys(msg).map((k: string) =>
-				k.slice(0, 1) !== "_" ? (updateObj[k] = msg[k]) : null
-			);
+			if (transforms.restrictions(io, socket, msg)) return;
+			const model = await modules._models.model.findOne({ _id: msg._id });
 			const records = await modules._models.model[
 				msg.search || !msg._id ? "updateMany" : "updateOne"
-			](msg.search ? msg.search : msg._id ? { _id: msg._id } : {}, updateObj);
-			io.to(socket.id).emit(`${name}_${msg._model}`, {
+			](
+				msg.search ? msg.search : msg._id ? { _id: msg._id } : {},
+				transforms.reduce(msg, model)
+			);
+			io.to(socket.id).emit(`updatedatamodels`, {
 				[msg._model]: records,
 				_triggerFetch: true,
 			});

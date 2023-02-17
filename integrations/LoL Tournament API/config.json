@@ -1,0 +1,12 @@
+{
+	"active": false,
+	"settings": {
+		"endpoints_active": false
+	},
+	"decorators": {
+		"description": "LoL Tournament API links with an existing RIOT games API key, managing game stats and data compliance.",
+		"img": "http://localhost:7000/static/integrationsart/riotxlol.jpg"
+	},
+	"apivalues": {},
+	"endpoints": {}
+}

@@ -1,173 +1,169 @@
 import express, { Express } from "express";
 import fs from "fs";
+import path from "path";
 import config from "./config";
 import SocketIO from "./socket.io";
 import Secrets from "./secrets";
 import mongoose from "mongoose";
+import vanguard from "./vanguard";
+import setup from "./setup";
+
+// @ts-ignore
+import jwt from "jsonwebtoken";
+// @ts-ignore
+import Cryptr from "cryptr";
 
 const Schema = mongoose.Schema;
 
 const app: Express = express();
+["integrationsart", "media", "defaultart"].map((s: string) =>
+	app.use(`/static/${s}`, express.static(path.join(__dirname, `${s}`)))
+);
 app.use(require("cors")());
 const server = require("http").createServer(app);
 
 const BaseModelMod: { [key: string]: any } = {};
 
-(async () => {
-	if (mongoose.connection.readyState < 1) {
-		mongoose
-			.connect(`mongodb://127.0.0.1/${config.database}`, {
-				keepAlive: true,
-			})
-			.then(null, (err) => new Error(err));
-	}
-	const modules: {
-		[key: string]: { [key: string]: any };
-	} = {};
-	const models: {
-		[key: string]: { [key: string]: any };
-	} = {};
-	models["model"] = mongoose.model("model", new Schema({}, { strict: false }));
-	const permissions = await models.model.findOne({
-		_type: "permissions",
-	});
-	if (!permissions)
-		await models.model.create(
-			Object.assign(
-				{
-					_type: "permissions",
-					_system: true,
-					text: "Permissions",
-					icon: "database",
-					subicon: "server",
-				},
-				BaseModelMod
-			)
-		);
-	const profile = await models.model.findOne({
-		_type: "profile",
-	});
-	if (!profile)
-		await models.model.create(
-			Object.assign(
-				{
-					_type: "profile",
-					_system: true,
-					name: {
-						_type: "String",
-						type: String,
-						unique: true,
-						required: true,
-					},
-					hierarchy: {
-						_type: "Number",
-						type: Number,
-						unique: false,
-						required: true,
-					},
-					text: "Profiles",
-					icon: "database",
-					subicon: "server",
-				},
-				BaseModelMod
-			)
-		);
-	const user = await models.model.findOne({
-		_type: "user",
-	});
-	if (!user)
-		await models.model.create(
-			Object.assign(
-				{
-					_type: "user",
-					_system: true,
-					username: {
-						_type: "String",
-						type: String,
-						unique: true,
-						required: true,
-					},
-					profiles: {
-						lookup: "profile",
-						_type: "Array",
-						type: Array,
-						unique: false,
-						required: false,
-					},
-					text: "Users",
-					icon: "database",
-					subicon: "server",
-				},
-				BaseModelMod
-			)
-		);
-	const settings = await models.model.findOne({ _type: "settings" });
-	if (!settings)
-		await models.model.create(
-			Object.assign(
-				{
-					_system: true,
-					_type: "settings",
-					name: {
-						_type: "String",
-						type: String,
-						unique: true,
-						required: true,
-					},
-					text: "Settings",
-					icon: "database",
-					subicon: "server",
-				},
-				BaseModelMod
-			)
-		);
+const Jwt = {
+	sign: (data: { [key: string]: any }) =>
+		jwt.sign(data, Secrets.jwt, { expiresIn: "1h" }),
+	verify: (data: { [key: string]: any }) => {
+		if (!data)
+			return {
+				error: `No token provided for query.`,
+				code: 401,
+			};
+		try {
+			return {
+				data: jwt.verify(data, Secrets.jwt),
+				code: 200,
+			};
+		} catch (e: any) {
+			return {
+				error: e.toString(),
+				code: 500,
+			};
+		}
+	},
+};
+
+const Crt = (C: any) => ({
+	encrypt: (s: string) => C.encrypt(s),
+	decrypt: (s: string) => C.decrypt(s),
+});
+
+const __buildModels = (models: any) => async () => {
 	const allDBModels = await models.model.find({});
 	allDBModels.map((model: { [key: string]: any }) => {
 		const _: {
 			[key: string]: any;
 		} = {};
-		if (!models[model._type]) models[model._type] = {};
-		Object.keys(Object.values(model)[2])
-			.filter((k) => !k.includes("_"))
-			.map((k) => (_[k] = typeof Object.values(model)[2][k]));
-		models[model._type] = mongoose.model(
-			model._type,
-			new Schema(_, { strict: true })
-		);
+		if (!models[model._type]) {
+			models[model._type] = {};
+			Object.keys(Object.values(model)[2])
+				.filter((k) => !k.includes("_"))
+				.map((k) => (_[k] = typeof Object.values(model)[2][k]));
+			models[model._type] = mongoose.model(
+				model._type,
+				new Schema(_, { strict: false })
+			);
+		}
 	});
-	let adminProfile = await models.profile.findOne({ name: "administrator" });
-	if (!adminProfile)
-		adminProfile = await models.profile.create({
-			name: "administrator",
-			hierarchy: 0,
+};
+
+const buildIntegrations = (modules: any) => (n?: string) => {
+	if (!fs.existsSync(`${__dirname}/integrations.json`)) {
+		const IntegrationsJSON: { [key: string]: any } = {};
+		fs.readdirSync(`${__dirname}/integrations`).map((e: string) => {
+			IntegrationsJSON[e] = JSON.parse(
+				fs.readFileSync(`${__dirname}/integrations/${e}/config.json`, {
+					encoding: "utf8",
+				})
+			);
 		});
-	const serverSettings = await models.settings.findOne({});
-	if (!serverSettings)
-		models.settings.create({
-			name: "default",
-		});
-	const adminUser = await models.user.findOne({
-		username: "administrator",
-	});
-	if (!adminUser)
-		models.user.create({
-			_system: true,
-			username: "administrator",
-			profiles: [adminProfile._id],
-		});
-	await Promise.all(
-		fs.readdirSync(`${__dirname}/modules`).map(async (n) => {
-			const module = require(`${__dirname}/modules/${n}`);
-			if (module.Active) {
-				const fns = fs
-					.readdirSync(`${__dirname}/module_functions/${n}`)
-					.map((f) => ({
-						n: f.split(".")[0],
-						f: require(`${__dirname}/module_functions/${n}/${f}`).default,
-					}));
-				modules[n.split(".")[0]] = await module.default(Secrets, fns, models);
+		fs.writeFileSync(
+			`${__dirname}/integrations.json`,
+			JSON.stringify(IntegrationsJSON),
+			{
+				encoding: "utf8",
 			}
+		);
+	}
+	const settings = require(`${__dirname}/integrations.json`);
+	Object.keys(settings).map((k: string) => {
+		modules.Integrations[k] = require(`${__dirname}/integrations/${k}`).default(
+			modules,
+			settings[k]
+		);
+		if (settings[k].active && modules.Integrations[k].setup)
+			modules.Integrations[k].setup();
+		fs.readdirSync(`${__dirname}/integrations/${k}/functions`).map(
+			(fn: string) => {
+				modules.Integrations[k][fn.split(".")[0]] =
+					require(`${__dirname}/integrations/${k}/functions/${fn}`).default(
+						modules,
+						settings[k]
+					);
+			}
+		);
+		return modules;
+	});
+	if (!modules.fs) modules.fs = fs;
+	return modules;
+};
+
+const collectScripts = () => {
+	const Scripts: { [key: string]: any } = {};
+	fs.readdirSync(`${__dirname}/scripts`).map((e: string) => {
+		const filenames = e.split(".");
+		if (filenames[1] === "js") {
+			const json = JSON.parse(
+				fs.readFileSync(`${__dirname}/scripts/${filenames[0]}.json`, {
+					encoding: "utf8",
+				})
+			);
+			const js = fs.readFileSync(`${__dirname}/scripts/${e}`, {
+				encoding: "utf8",
+			});
+			if (!Scripts[json.context]) Scripts[json.context] = {};
+			Scripts[json.context][e] = {};
+			Scripts[json.context][e].metadata = JSON.stringify(json);
+			Scripts[json.context][e].fn = js.toString();
+		}
+	});
+	return Scripts;
+};
+
+const runScripts = (modules: any) => (ctx: string) => {
+	if (modules.Scripts[ctx]) {
+		const t = Object.keys(modules.Scripts[ctx])
+			.filter(
+				(script: string) =>
+					JSON.parse(modules.Scripts[ctx][script].metadata).active
+			)
+			.map((script: string) => eval(modules.Scripts[ctx][script].fn)(modules));
+	}
+};
+
+setup(
+	config,
+	mongoose,
+	Schema,
+	BaseModelMod,
+	__buildModels,
+	fs,
+	Secrets,
+	server,
+	SocketIO,
+	Jwt,
+	Crt(
+		new Cryptr(Secrets.cryptr, {
+			pbkdf2Iterations: 10000,
+			saltLength: 10,
 		})
-	);
-	SocketIO(server, config.port, Object.assign(modules, { _models: models }));
-})();
+	),
+	vanguard,
+	buildIntegrations,
+	collectScripts,
+	runScripts
+);

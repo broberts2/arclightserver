@@ -1,9 +1,14 @@
-const fs = require("fs");
+import transforms from "./transforms";
+import fs from "fs";
 
-const SocketIO = (server: any, port: number, modules: Object) => {
+const SocketIO = (
+	server: any,
+	port: number,
+	modules: { [key: string]: any }
+) => {
 	server.listen(port, () => {
 		console.log(
-			`⚡️Arclight Server is running at http://localhost:${port} ⚡️`
+			`⚡️ Arclight Server is running at http://localhost:${port}  ⚡️`
 		);
 	});
 	const io = require("socket.io")(server, {
@@ -20,7 +25,7 @@ const SocketIO = (server: any, port: number, modules: Object) => {
 				require(`${__dirname}/operations/${e}`).default(
 					modules,
 					e.split(".")[0],
-					{}
+					transforms(modules._buildModels)
 				))
 	);
 	fs.readdirSync(`${__dirname}/events`).map((e: string) =>
