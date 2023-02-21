@@ -16,10 +16,11 @@ export default (
 ) => {
 	const _: { [key: string]: Function } = {
 		Discord,
-		setup: async () => {
-			console.log("Discord Integration Loaded");
+		setup: async (Settings: any) => {
 			if (settings.token) await Discord.login(settings.apivalues.token);
 		},
+		onUpdate: async (Settings: any) => {},
+		onDeactivate: async (Settings: any) => {},
 	};
 	return _;
 };

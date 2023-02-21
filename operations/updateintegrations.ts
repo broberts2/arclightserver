@@ -1,3 +1,12 @@
+const _f =
+	(io: any, socket: any, modules: any) =>
+	async (record: string, s?: Object) => {
+		if (modules && modules._models && modules._models[record]) {
+			const records = await modules._models[record].find(s ? s : {});
+			io.to(socket.id).emit(`getrecords_${record}`, records);
+		}
+	};
+
 export default (
 		modules: { [key: string]: any },
 		name: string,
@@ -17,15 +26,27 @@ export default (
 					encoding: "utf8",
 				}
 			);
-			if (
-				!prevActive &&
-				integrations[msg.integration].active &&
-				modules.Integrations[msg.integration].setup
-			)
-				await modules.Integrations[msg.integration].setup();
-			io.to(socket.id).emit(`getintegrations`, {
-				_triggerFetch: true,
-			});
+			if (integrations[msg.integration].active) {
+				if (!prevActive && modules.Integrations[msg.integration].setup)
+					await modules.Integrations[msg.integration].setup(
+						integrations[msg.integration],
+						_f(io, socket, modules)
+					);
+				else if (modules.Integrations[msg.integration].onUpdate)
+					await modules.Integrations[msg.integration].onUpdate(
+						integrations[msg.integration],
+						_f(io, socket, modules)
+					);
+			} else if (
+				prevActive &&
+				modules.Integrations[msg.integration].onDeactivate
+			) {
+				await modules.Integrations[msg.integration].onDeactivate(
+					integrations[msg.integration],
+					_f(io, socket, modules)
+				);
+			}
+			io.to(socket.id).emit(`getintegrations`, integrations);
 			io.to(socket.id).emit(`serversuccess`, {
 				code: 202,
 				msg: `Update successful.`,

@@ -31,6 +31,7 @@ const SocketIO = (
 	fs.readdirSync(`${__dirname}/events`).map((e: string) =>
 		require(`${__dirname}/events/${e}`).default(io, operations)
 	);
+	modules.buildIntegrations();
 	return server;
 };
 

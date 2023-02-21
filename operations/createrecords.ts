@@ -5,18 +5,25 @@ export default (
 	) =>
 	(io: { [key: string]: any }, socket: { [key: string]: any }) =>
 	async (msg: any) => {
-		if (transforms.restrictions(io, socket, msg)) return;
-		await modules.runScripts("before-create");
-		const records = await modules._models[msg._model].insertMany(
-			transforms.reduce(msg)
-		);
-		io.to(socket.id).emit(`${name}_${msg._model}`, {
-			[msg._model]: records,
-			_triggerFetch: true,
-		});
-		await modules.runScripts("after-create");
-		io.to(socket.id).emit(`serversuccess`, {
-			code: 201,
-			msg: `Create successful.`,
-		});
+		try {
+			if (transforms.restrictions(io, socket, msg)) return;
+			await modules.runScripts("before-create", io, socket);
+			const records = await modules._models[msg._model].insertMany(
+				transforms.reduce(msg)
+			);
+			io.to(socket.id).emit(`${name}_${msg._model}`, {
+				[msg._model]: records,
+				_triggerFetch: true,
+			});
+			await modules.runScripts("after-create", io, socket);
+			io.to(socket.id).emit(`serversuccess`, {
+				code: 201,
+				msg: `Create successful.`,
+			});
+		} catch (msg) {
+			return io.to(socket.id).emit(`servererror`, {
+				code: 503,
+				msg,
+			});
+		}
 	};

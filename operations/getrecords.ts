@@ -8,9 +8,9 @@ export default (
 		if (modules._models[msg._model]) {
 			try {
 				if (transforms.restrictions(io, socket, msg)) return;
-				await modules.runScripts("before-get");
+				await modules.runScripts("before-get", io, socket);
 				const records = await modules._models[msg._model].find(msg?.search);
-				await modules.runScripts("after-get");
+				await modules.runScripts("after-get", io, socket);
 				return io.to(socket.id).emit(`${name}_${msg._model}`, {
 					[msg._model]: records,
 				});

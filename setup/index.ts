@@ -7,13 +7,15 @@ export default async (
 	fs: any,
 	Secrets: any,
 	server: any,
+	app: any,
 	SocketIO: any,
 	jwt: any,
 	Cryptr: any,
 	vanguard: any,
 	buildIntegrations: any,
 	collectScripts: any,
-	runScripts: any
+	runScripts: any,
+	runRoutes: any
 ) => {
 	if (mongoose.connection.readyState < 1)
 		mongoose
@@ -21,11 +23,7 @@ export default async (
 				keepAlive: true,
 			})
 			.then(null, (err: any) => new Error(err));
-	["media", "scripts"].map((s: string) =>
-		!fs.existsSync(`${__dirname}/../${s}`)
-			? fs.mkdirSync(`${__dirname}/../${s}`)
-			: null
-	);
+	require("./setupStaticDirectories").default(fs);
 	const modules: {
 		[key: string]: { [key: string]: any };
 	} = {};
@@ -33,58 +31,7 @@ export default async (
 		[key: string]: { [key: string]: any };
 	} = {};
 	models["model"] = mongoose.model("model", new Schema({}, { strict: false }));
-	const permissions = await models.model.findOne({
-		_type: "permissions",
-	});
-	if (!permissions)
-		await models.model.create(
-			Object.assign(
-				{
-					_type: "permissions",
-					_system: true,
-					create: {
-						lookup: "profile",
-						_type: "Array",
-						type: Array,
-						unique: true,
-						required: true,
-					},
-					read: {
-						lookup: "profile",
-						_type: "Array",
-						type: Array,
-						unique: true,
-						required: true,
-					},
-					edit: {
-						lookup: "profile",
-						_type: "Array",
-						type: Array,
-						unique: true,
-						required: true,
-					},
-					delete: {
-						lookup: "profile",
-						_type: "Array",
-						type: Array,
-						unique: true,
-						required: true,
-					},
-					img: {
-						_type: "String",
-						type: String,
-						unique: false,
-						required: false,
-					},
-					publicread: false,
-					text: "Permissions",
-					icon: "shield",
-					subicon: "user-shield",
-					metaimg: `http://localhost:7000/static/defaultart/permissions.jpg`,
-				},
-				BaseModelMod
-			)
-		);
+	await require("./setupPermissionsModel").default(models, BaseModelMod);
 	const profile = await models.model.findOne({
 		_type: "profile",
 	});
@@ -308,7 +255,11 @@ export default async (
 	modules.Integrations = {};
 	modules.Scripts = collectScripts();
 	modules.runScripts = runScripts(modules);
-	modules.buildIntegrations = buildIntegrations(modules)();
+	modules.buildIntegrations = buildIntegrations(modules);
+	const r = runRoutes(modules);
+	["get", "post", "put", "delete"].map((s: string) =>
+		app[s]("/api/:endpoint", (req: any, res: any) => r(s, req, res))
+	);
 	SocketIO(
 		server,
 		config.port,

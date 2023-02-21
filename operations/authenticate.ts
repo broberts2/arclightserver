@@ -73,6 +73,7 @@ export default (
 									if (
 										c(p.name === "logs", k, 1) ||
 										c(p.name === "integrations", k, 2) ||
+										c(p._app, k, 3) ||
 										c(p.name === "script", k, 3)
 									) {
 										const n =

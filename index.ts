@@ -1,5 +1,6 @@
 import express, { Express } from "express";
 import fs from "fs";
+import bodyParser from "body-parser";
 import path from "path";
 import config from "./config";
 import SocketIO from "./socket.io";
@@ -7,6 +8,7 @@ import Secrets from "./secrets";
 import mongoose from "mongoose";
 import vanguard from "./vanguard";
 import setup from "./setup";
+import runRoutes from "./runroutes";
 
 // @ts-ignore
 import jwt from "jsonwebtoken";
@@ -20,6 +22,7 @@ const app: Express = express();
 	app.use(`/static/${s}`, express.static(path.join(__dirname, `${s}`)))
 );
 app.use(require("cors")());
+app.use(bodyParser.json());
 const server = require("http").createServer(app);
 
 const BaseModelMod: { [key: string]: any } = {};
@@ -71,7 +74,7 @@ const __buildModels = (models: any) => async () => {
 	});
 };
 
-const buildIntegrations = (modules: any) => (n?: string) => {
+const buildIntegrations = (modules: any) => () => {
 	if (!fs.existsSync(`${__dirname}/integrations.json`)) {
 		const IntegrationsJSON: { [key: string]: any } = {};
 		fs.readdirSync(`${__dirname}/integrations`).map((e: string) => {
@@ -95,8 +98,6 @@ const buildIntegrations = (modules: any) => (n?: string) => {
 			modules,
 			settings[k]
 		);
-		if (settings[k].active && modules.Integrations[k].setup)
-			modules.Integrations[k].setup();
 		fs.readdirSync(`${__dirname}/integrations/${k}/functions`).map(
 			(fn: string) => {
 				modules.Integrations[k][fn.split(".")[0]] =
@@ -107,6 +108,10 @@ const buildIntegrations = (modules: any) => (n?: string) => {
 			}
 		);
 		return modules;
+	});
+	Object.keys(settings).map((k: string) => {
+		if (settings[k].active && modules.Integrations[k].setup)
+			modules.Integrations[k].setup(settings[k]);
 	});
 	if (!modules.fs) modules.fs = fs;
 	return modules;
@@ -134,14 +139,17 @@ const collectScripts = () => {
 	return Scripts;
 };
 
-const runScripts = (modules: any) => (ctx: string) => {
+const runScripts = (modules: any) => (ctx: string, io: any, socket: any) => {
 	if (modules.Scripts[ctx]) {
-		const t = Object.keys(modules.Scripts[ctx])
+		Object.keys(modules.Scripts[ctx])
 			.filter(
 				(script: string) =>
 					JSON.parse(modules.Scripts[ctx][script].metadata).active
 			)
-			.map((script: string) => eval(modules.Scripts[ctx][script].fn)(modules));
+			.map((script: string) => {
+				const _ = eval(modules.Scripts[ctx][script].fn);
+				return typeof _ === "function" ? _(modules) : null;
+			});
 	}
 };
 
@@ -154,6 +162,7 @@ setup(
 	fs,
 	Secrets,
 	server,
+	app,
 	SocketIO,
 	Jwt,
 	Crt(
@@ -165,5 +174,6 @@ setup(
 	vanguard,
 	buildIntegrations,
 	collectScripts,
-	runScripts
+	runScripts,
+	runRoutes
 );

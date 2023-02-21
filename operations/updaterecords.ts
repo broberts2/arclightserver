@@ -7,7 +7,7 @@ export default (
 	async (msg: { [key: string]: any }) => {
 		try {
 			if (transforms.restrictions(io, socket, msg)) return;
-			await modules.runScripts("before-update");
+			await modules.runScripts("before-update", io, socket);
 			const records = await modules._models[msg._model][
 				msg.search || !msg._id ? "updateMany" : "updateOne"
 			](
@@ -18,7 +18,7 @@ export default (
 				[msg._model]: records,
 				_triggerFetch: true,
 			});
-			await modules.runScripts("after-update");
+			await modules.runScripts("after-update", io, socket);
 			io.to(socket.id).emit(`serversuccess`, {
 				code: 202,
 				msg: `Update successful.`,
