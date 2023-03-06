@@ -1,7 +1,7 @@
 import express, { Express } from "express";
 import fs from "fs";
-import bodyParser from "body-parser";
 import path from "path";
+import fetch from "node-fetch";
 import config from "./config";
 import SocketIO from "./socket.io";
 import Secrets from "./secrets";
@@ -16,14 +16,6 @@ import jwt from "jsonwebtoken";
 import Cryptr from "cryptr";
 
 const Schema = mongoose.Schema;
-
-const app: Express = express();
-["integrationsart", "media", "defaultart"].map((s: string) =>
-	app.use(`/static/${s}`, express.static(path.join(__dirname, `${s}`)))
-);
-app.use(require("cors")());
-app.use(bodyParser.json());
-const server = require("http").createServer(app);
 
 const BaseModelMod: { [key: string]: any } = {};
 
@@ -139,41 +131,91 @@ const collectScripts = () => {
 	return Scripts;
 };
 
-const runScripts = (modules: any) => (ctx: string, io: any, socket: any) => {
-	if (modules.Scripts[ctx]) {
-		Object.keys(modules.Scripts[ctx])
-			.filter(
-				(script: string) =>
-					JSON.parse(modules.Scripts[ctx][script].metadata).active
-			)
-			.map((script: string) => {
-				const _ = eval(modules.Scripts[ctx][script].fn);
-				return typeof _ === "function" ? _(modules) : null;
-			});
-	}
-};
+const runScripts =
+	(modules: any) => (ctx: string, io: any, socket: any) => (msg: any) => {
+		if (modules.Scripts[ctx]) {
+			Object.keys(modules.Scripts[ctx])
+				.filter(
+					(script: string) =>
+						JSON.parse(modules.Scripts[ctx][script].metadata).active
+				)
+				.map((script: string) => {
+					const _ = eval(modules.Scripts[ctx][script].fn);
+					return typeof _ === "function" ? _(modules, msg) : null;
+				});
+		}
+	};
 
-setup(
-	config,
-	mongoose,
-	Schema,
-	BaseModelMod,
-	__buildModels,
-	fs,
-	Secrets,
-	server,
-	app,
-	SocketIO,
-	Jwt,
-	Crt(
-		new Cryptr(Secrets.cryptr, {
-			pbkdf2Iterations: 10000,
-			saltLength: 10,
-		})
-	),
-	vanguard,
-	buildIntegrations,
-	collectScripts,
-	runScripts,
-	runRoutes
-);
+const recursiveLookup =
+	(modules: any) => async (type: string, query?: { [key: string]: any }) => {
+		const Terminators: { [key: string]: boolean } = {};
+		const M: any = {};
+		const _ = await modules._models.model.find();
+		if (_) _.map((o: any) => (M[o._type] = o));
+		const runner = async (type: string, query?: { [key: string]: any }) => {
+			const R = await modules._models[type].find(query ? query : {});
+			return await Promise.all(
+				R.map(async (record: any) => {
+					const _: { [key: string]: any } = {};
+					await Promise.all(
+						Object.keys(record._doc).map(async (key: string) => {
+							if (
+								!Terminators[type] &&
+								M[type][key] &&
+								typeof M[type][key] === "object" &&
+								M[type][key].lookup
+							) {
+								const v = await runner(M[type][key].lookup, {
+									_id: { $in: [].concat(record[key]) },
+								});
+								_[key] = M[type][key]._type === "String" ? v[0] : v;
+								Terminators[type] = true;
+							} else {
+								_[key] = record[key];
+							}
+						})
+					);
+					return _;
+				})
+			);
+		};
+		return await runner(type, query);
+	};
+
+export default () => {
+	const app: Express = express();
+	["integrationsart", "media", "defaultart"].map((s: string) =>
+		app.use(`/static/${s}`, express.static(path.join(__dirname, `${s}`)))
+	);
+	app.use(require("cors")());
+	app.use(express.json({ limit: "50mb" }));
+	app.use(express.urlencoded({ limit: "50mb" }));
+	const server = require("http").createServer(app);
+
+	setup(
+		config,
+		mongoose,
+		Schema,
+		BaseModelMod,
+		__buildModels,
+		fs,
+		Secrets,
+		server,
+		app,
+		SocketIO,
+		Jwt,
+		Crt(
+			new Cryptr(Secrets.cryptr, {
+				pbkdf2Iterations: 10000,
+				saltLength: 10,
+			})
+		),
+		vanguard,
+		buildIntegrations,
+		collectScripts,
+		runScripts,
+		runRoutes,
+		recursiveLookup,
+		fetch
+	);
+};

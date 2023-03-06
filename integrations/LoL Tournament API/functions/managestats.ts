@@ -14,6 +14,54 @@ export default (Modules: any) => async (Settings: any, fn?: Function) => {
 				text: "LoL Game Stats",
 				icon: "phoenix-framework",
 				metaimg: `http://localhost:7000/static/media/riotxlol.jpg`,
+				league: {
+					lookup: Settings.settings.leaguemodeltype,
+					_type: "String",
+					unique: false,
+					required: false,
+				},
+				seasonNum: {
+					_type: "Number",
+					unique: false,
+					required: false,
+				},
+				weekNum: {
+					_type: "Number",
+					unique: false,
+					required: false,
+				},
+				gameNum: {
+					_type: "Number",
+					unique: false,
+					required: false,
+				},
+				team1: {
+					lookup: Settings.settings.teammodeltype,
+					_type: "String",
+					unique: false,
+					required: false,
+				},
+				team2: {
+					lookup: Settings.settings.teammodeltype,
+					_type: "String",
+					unique: false,
+					required: false,
+				},
+				info: {
+					_type: "JSON",
+					unique: false,
+					required: false,
+				},
+				providerId: {
+					_type: "Number",
+					unique: false,
+					required: false,
+				},
+				tournamentId: {
+					_type: "Number",
+					unique: false,
+					required: false,
+				},
 			});
 		if (!P) {
 			const adminProfileId = await Modules._models.profile

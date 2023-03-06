@@ -10,6 +10,8 @@ export default (
 		msg: { [key: string]: any }
 	) => {
 		operations.authenticate(
+			io,
+			socket,
 			msg,
 			(token: string) => {
 				io.to(socket.id).emit(`savetoken`, {

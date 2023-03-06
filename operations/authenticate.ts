@@ -18,6 +18,8 @@ export default (
 		transforms: { [key: string]: Function }
 	) =>
 	async (
+		io: any,
+		socket: any,
 		msg: { [key: string]: any },
 		savetoken: Function,
 		cleartoken: Function,
@@ -48,6 +50,7 @@ export default (
 				token = savetoken(modules.jwt.sign({ _: u._id }));
 			else noauth(`Invalid Username or Password.`);
 		} else if (!msg._token) {
+			io.to(socket.id).emit("cleartoken");
 			if (!msg.username) noauth(`Username required.`);
 			else if (!msg.password) noauth(`Password required.`);
 		} else if (msg._token) {
@@ -95,5 +98,7 @@ export default (
 					: null
 			);
 		});
+		if (msg && msg.redirect && u)
+			io.to(socket.id).emit("redirect", { route: "/" });
 		cb(calls, token);
 	};

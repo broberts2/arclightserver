@@ -15,7 +15,9 @@ export default async (
 	buildIntegrations: any,
 	collectScripts: any,
 	runScripts: any,
-	runRoutes: any
+	runRoutes: any,
+	recursiveLookup: any,
+	fetch: any
 ) => {
 	if (mongoose.connection.readyState < 1)
 		mongoose
@@ -180,6 +182,18 @@ export default async (
 						unique: false,
 						required: false,
 					},
+					apikeyaccess: {
+						_type: "String",
+						type: String,
+						unique: false,
+						required: false,
+					},
+					nonstrict: {
+						_type: "Boolean",
+						type: Boolean,
+						unique: false,
+						required: false,
+					},
 					text: "Endpoints",
 					icon: "circle-nodes",
 					metaimg: `http://localhost:7000/static/defaultart/endpoint.jpg`,
@@ -256,14 +270,17 @@ export default async (
 	modules.Scripts = collectScripts();
 	modules.runScripts = runScripts(modules);
 	modules.buildIntegrations = buildIntegrations(modules);
+	modules.recursiveLookup = recursiveLookup(modules);
 	const r = runRoutes(modules);
 	["get", "post", "put", "delete"].map((s: string) =>
-		app[s]("/api/:endpoint", (req: any, res: any) => r(s, req, res))
+		app[s]("/api/:endpoint", (req: any, res: any) => r(req, res))
 	);
 	SocketIO(
 		server,
 		config.port,
 		Object.assign(modules, {
+			fs,
+			fetch,
 			mongoose,
 			Schema,
 			_models: models,

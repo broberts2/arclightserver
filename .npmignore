@@ -1,0 +1,5 @@
+# .npmignore
+media
+scripts
+integrations.json
+runserver.ts

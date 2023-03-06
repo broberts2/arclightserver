@@ -21,7 +21,8 @@ export default (Modules: any) => async (Settings: any, fn?: Function) => {
 			img: `http://localhost:7000/static/media/riotxlol.jpg`,
 		});
 		if (fn) fn("permissions");
-	} else if (P && !Settings.app.active) {
+	}
+	if (P && !Settings.app.active) {
 		await Modules._models.permissions.deleteOne({ name: "LoL Tournament API" });
 		if (fn) fn("permissions");
 	}
