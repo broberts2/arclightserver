@@ -8,7 +8,7 @@ export default (
 		const value = JSON.parse(msg.value);
 		["js", "json"].map((s: string) =>
 			modules.fs.unlinkSync(
-				`${__dirname}/../scripts/${value.name.split(".")[0]}.${s}`
+				`${__dirname}/../../scripts/${value.name.split(".")[0]}.${s}`
 			)
 		);
 		modules.Scripts[msg.ctx][value.name] = undefined;

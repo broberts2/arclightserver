@@ -1,3 +1,6 @@
+import setupStaticDirectories from "./setupStaticDirectories";
+import setupPermissionsModel from "./setupPermissionsModel";
+
 export default async (
 	config: { [key: string]: any },
 	mongoose: { [key: string]: any },
@@ -25,7 +28,7 @@ export default async (
 				keepAlive: true,
 			})
 			.then(null, (err: any) => new Error(err));
-	require("./setupStaticDirectories").default(fs);
+	setupStaticDirectories(fs);
 	const modules: {
 		[key: string]: { [key: string]: any };
 	} = {};
@@ -33,7 +36,7 @@ export default async (
 		[key: string]: { [key: string]: any };
 	} = {};
 	models["model"] = mongoose.model("model", new Schema({}, { strict: false }));
-	await require("./setupPermissionsModel").default(models, BaseModelMod);
+	await setupPermissionsModel(models, BaseModelMod);
 	const profile = await models.model.findOne({
 		_type: "profile",
 	});

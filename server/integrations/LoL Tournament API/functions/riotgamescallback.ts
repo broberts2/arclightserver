@@ -1,7 +1,5 @@
 export default (Modules: any) => async (record: any) => {
-	const Settings = require(`${__dirname}/../../../integrations.json`)[
-		"LoL Tournament API"
-	];
+	const Settings = require(`integrations.json`)["LoL Tournament API"];
 	const data = await fetch(
 		`${Settings.gamedataendpoint}/${record.region}_${record.gameId}?api_key=${Settings.apivalues.tournamentapikey}`
 	).then((res: any) => res.json());

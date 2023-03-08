@@ -14,12 +14,12 @@ export default (
 			if (b)
 				["json", "js"].map((s: string) =>
 					modules.fs.renameSync(
-						`${__dirname}/../scripts/${msg.script.split(".")[0]}.${s}`,
-						`${__dirname}/../scripts/${name.split(".")[0]}.${s}`
+						`${__dirname}/../../scripts/${msg.script.split(".")[0]}.${s}`,
+						`${__dirname}/../../scripts/${name.split(".")[0]}.${s}`
 					)
 				);
 			modules.fs.writeFileSync(
-				`${__dirname}/../scripts/${name.split(".")[0]}.${
+				`${__dirname}/../../scripts/${name.split(".")[0]}.${
 					msg.type === "Script Logic" ? "js" : "json"
 				}`,
 				msg.value,

@@ -9,7 +9,7 @@ export default (
 			const value = JSON.parse(msg.value);
 			["js", "json"].map((s: string, i: number) =>
 				modules.fs.writeFileSync(
-					`${__dirname}/../scripts/${value.name.split(".")[0]}.${s}`,
+					`scripts/${value.name.split(".")[0]}.${s}`,
 					i ? JSON.stringify(value) : `async (ServerObject) => {\n\n};`,
 					{
 						encoding: "utf8",

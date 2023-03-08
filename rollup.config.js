@@ -6,26 +6,48 @@ const peerDepsExternal = require("rollup-plugin-peer-deps-external");
 const dts = require("rollup-plugin-dts");
 const babel = require("@rollup/plugin-babel").babel;
 const json = require("@rollup/plugin-json");
+const copy = require("rollup-plugin-copy");
 const packageJson = require("./package.json");
 module.exports = [
 	{
-		input: "index.ts",
+		input: "server/index.ts",
 		output: [
 			{
 				file: packageJson.main,
 				format: "cjs",
 				sourcemap: false,
 			},
+			// {
+			// 	file: packageJson.module,
+			// 	format: "esm",
+			// 	sourcemap: false,
+			// },
 		],
 		plugins: [
-			commonjs({
-				include: "node_modules/**/*",
+			copy({
+				targets: [
+					"operations",
+					"events",
+					"integrations",
+					"defaultart",
+					"integrationsart",
+				].map((n) => ({
+					src: `server/${n}`,
+					dest: `dist`,
+				})),
 			}),
 			nodeResolve(),
-			nodePolyfills(),
-			json(),
 			peerDepsExternal(),
+			commonjs({ transformMixedEsModules: true, strictRequires: true }),
+			json(),
+			// nodePolyfills(),
 			typescript(),
+			//babel({ babelHelpers: "bundled" }),
 		],
 	},
+	// {
+	// 	input: "dist/esm/types/index.d.ts",
+	// 	output: [{ file: "dist/index.d.ts", format: "esm" }],
+	// 	plugins: [dts.default(), nodePolyfills()],
+	// },
 ];

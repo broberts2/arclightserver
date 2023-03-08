@@ -67,7 +67,7 @@ const __buildModels = (models: any) => async () => {
 };
 
 const buildIntegrations = (modules: any) => () => {
-	if (!fs.existsSync(`${__dirname}/integrations.json`)) {
+	if (!fs.existsSync(`${__dirname}/../integrations.json`)) {
 		const IntegrationsJSON: { [key: string]: any } = {};
 		fs.readdirSync(`${__dirname}/integrations`).map((e: string) => {
 			IntegrationsJSON[e] = JSON.parse(
@@ -77,14 +77,14 @@ const buildIntegrations = (modules: any) => () => {
 			);
 		});
 		fs.writeFileSync(
-			`${__dirname}/integrations.json`,
+			`${__dirname}/../integrations.json`,
 			JSON.stringify(IntegrationsJSON),
 			{
 				encoding: "utf8",
 			}
 		);
 	}
-	const settings = require(`${__dirname}/integrations.json`);
+	const settings = require(`${__dirname}/../integrations.json`);
 	Object.keys(settings).map((k: string) => {
 		modules.Integrations[k] = require(`${__dirname}/integrations/${k}`).default(
 			modules,
@@ -111,7 +111,7 @@ const buildIntegrations = (modules: any) => () => {
 
 const collectScripts = () => {
 	const Scripts: { [key: string]: any } = {};
-	fs.readdirSync(`${__dirname}/scripts`).map((e: string) => {
+	fs.readdirSync(`scripts`).map((e: string) => {
 		const filenames = e.split(".");
 		if (filenames[1] === "js") {
 			const json = JSON.parse(
@@ -119,7 +119,7 @@ const collectScripts = () => {
 					encoding: "utf8",
 				})
 			);
-			const js = fs.readFileSync(`${__dirname}/scripts/${e}`, {
+			const js = fs.readFileSync(`scripts/${e}`, {
 				encoding: "utf8",
 			});
 			if (!Scripts[json.context]) Scripts[json.context] = {};
@@ -184,8 +184,11 @@ const recursiveLookup =
 
 export default () => {
 	const app: Express = express();
-	["integrationsart", "media", "defaultart"].map((s: string) =>
+	["integrationsart", "defaultart"].map((s: string) =>
 		app.use(`/static/${s}`, express.static(path.join(__dirname, `${s}`)))
+	);
+	["media"].map((s: string) =>
+		app.use(`/static/${s}`, express.static(path.join(__dirname, `../${s}`)))
 	);
 	app.use(require("cors")());
 	app.use(express.json({ limit: "50mb" }));

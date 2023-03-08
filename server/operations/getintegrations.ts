@@ -7,7 +7,7 @@ export default (
 	async (msg: { [key: string]: any }) => {
 		try {
 			if (transforms.restrictions(io, socket, msg)) return;
-			const integrations = require("../integrations.json");
+			const integrations = require(`${__dirname}/../../integrations.json`);
 			io.to(socket.id).emit(name, integrations);
 		} catch (e: any) {
 			io.to(socket.id).emit(`servererror`, {

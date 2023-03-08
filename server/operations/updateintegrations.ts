@@ -16,11 +16,11 @@ export default (
 	async (msg: { [key: string]: any }) => {
 		try {
 			if (transforms.restrictions(io, socket, msg)) return;
-			const integrations = require(`../integrations.json`);
+			const integrations = require(`${__dirname}/../../integrations.json`);
 			const prevActive = integrations[msg.integration].active;
 			integrations[msg.integration] = JSON.parse(msg.value);
 			modules.fs.writeFileSync(
-				`${__dirname}/../integrations.json`,
+				`${__dirname}/../../integrations.json`,
 				JSON.stringify(integrations),
 				{
 					encoding: "utf8",
