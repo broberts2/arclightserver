@@ -7,7 +7,7 @@ const _k =
 			? model[k]._type
 			: null;
 
-export default (_buildModels: Function) => ({
+module.exports = (_buildModels: Function) => ({
 	reduce: (msg: any, model?: { [key: string]: any }, newModel?: boolean) => {
 		const UpdateObj: { [key: string]: any } = {};
 		const a = (a: any, k: string) => {

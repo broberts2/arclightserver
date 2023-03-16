@@ -1,4 +1,4 @@
-const fs = require("fs");
+//const fs = require("fs");
 const { Client, IntentsBitField } = require("discord.js");
 const intents = new IntentsBitField();
 intents
@@ -8,19 +8,21 @@ intents
 	();
 const Discord = new Client({ intents });
 
-export default (
+module.exports = (
 	modules: {
 		[key: string]: any;
 	},
-	settings: { [key: string]: any }
+	publicURI: string
 ) => {
 	const _: { [key: string]: Function } = {
 		Discord,
 		setup: async (Settings: any) => {
-			if (settings.token) await Discord.login(settings.apivalues.token);
+			if (Settings.token) await Discord.login(Settings.apivalues.token);
 		},
 		onUpdate: async (Settings: any) => {},
-		onDeactivate: async (Settings: any) => {},
+		onDeactivate: async (Settings: any) => {
+			console.log(Settings);
+		},
 	};
 	return _;
 };

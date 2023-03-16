@@ -1,7 +1,7 @@
-import transforms from "./transforms";
-import fs from "fs";
+const transforms = require("./transforms");
+const _fs = require("fs");
 
-const SocketIO = (
+module.exports = (
 	server: any,
 	port: number,
 	modules: { [key: string]: any }
@@ -19,20 +19,19 @@ const SocketIO = (
 	const operations: {
 		[key: string]: Function;
 	} = {};
-	fs.readdirSync(`${__dirname}/operations`).map(
-		(e: string) =>
-			(operations[e.split(".")[0]] =
-				require(`${__dirname}/operations/${e}`).default(
+	_fs
+		.readdirSync(`${__dirname}/operations`)
+		.map(
+			(e: string) =>
+				(operations[e.split(".")[0]] = require(`${__dirname}/operations/${e}`)(
 					modules,
 					e.split(".")[0],
 					transforms(modules._buildModels)
 				))
-	);
-	fs.readdirSync(`${__dirname}/events`).map((e: string) =>
-		require(`${__dirname}/events/${e}`).default(io, operations)
-	);
+		);
+	_fs
+		.readdirSync(`${__dirname}/events`)
+		.map((e: string) => require(`${__dirname}/events/${e}`)(io, operations));
 	modules.buildIntegrations();
 	return server;
 };
-
-export default SocketIO;

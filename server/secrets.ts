@@ -1,4 +1,4 @@
-export default {
+module.exports = {
 	jwt: "secret",
 	cryptr: "secret",
 };

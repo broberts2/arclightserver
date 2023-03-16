@@ -1,4 +1,4 @@
-export default (modules: any) => async (req: any, res: any) => {
+module.exports = (modules: any) => async (req: any, res: any) => {
 	try {
 		const accesstype = req.method.toLowerCase();
 		const E = await modules._models.endpoint.findOne({

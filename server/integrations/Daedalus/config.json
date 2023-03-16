@@ -3,7 +3,7 @@
 	"settings": { "endpoints_active": false },
 	"decorators": {
 		"description": "Daedalus is the essential integration that mediates communication with Daedalus Studios, managing subscriptions.",
-		"img": "http://localhost:7000/static/integrationsart/daedalus.jpg"
+		"img": "static/integrationsart/daedalus.jpg"
 	},
 	"apivalues": {}
 }

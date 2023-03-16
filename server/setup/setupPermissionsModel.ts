@@ -1,4 +1,4 @@
-export default async (models: any, BaseModelMod: any) => {
+module.exports = async (models: any, BaseModelMod: any, publicURI: string) => {
 	const permissions = await models.model.findOne({
 		_type: "permissions",
 	});
@@ -47,7 +47,7 @@ export default async (models: any, BaseModelMod: any) => {
 					text: "Permissions",
 					icon: "shield",
 					subicon: "user-shield",
-					metaimg: `http://localhost:7000/static/defaultart/permissions.jpg`,
+					metaimg: `${publicURI}/static/defaultart/permissions.jpg`,
 				},
 				BaseModelMod
 			)

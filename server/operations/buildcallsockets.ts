@@ -1,4 +1,5 @@
-export default (
+module.exports =
+	(
 		modules: { [key: string]: any },
 		name: string,
 		transforms: { [key: string]: Function }
@@ -11,13 +12,31 @@ export default (
 		token?: string
 	) => {
 		const v = modules.vanguard(modules, io, socket);
-		Object.keys(calls).map((k) =>
-			Array.isArray(calls[k])
+		Object.keys(calls).map((k) => {
+			let IntegrationSettings: { [key: string]: any };
+			const isAppFn =
+				modules &&
+				modules.Integrations &&
+				Object.keys(modules.Integrations).find((l: string) =>
+					modules.Integrations[l].invokables
+						? modules.Integrations[l].invokables.find((Invokable: any) => {
+								if (!(Invokable && Invokable.name && Invokable.name === k))
+									return null;
+								return Invokable;
+						  })
+						: false
+				);
+			return Array.isArray(calls[k])
 				? calls[k].map((type: string) =>
 						socket.on(`${k}_${type}`, (msg: { [key: string]: any }) =>
 							v(
 								token ? token : msg?._token,
-								() => operations[k](io, socket)({ ...msg, _model: type }),
+								() =>
+									isAppFn
+										? modules.Integrations[isAppFn].invokables
+												.find((Invokable: any) => Invokable.name === k)
+												.fn(msg, io, socket)
+										: operations[k](io, socket)({ ...msg, _model: type }),
 								type
 							)
 						)
@@ -25,10 +44,15 @@ export default (
 				: socket.on(k, (msg: { [key: string]: any }) =>
 						v(
 							token ? token : msg?._token,
-							() => operations[k](io, socket)(msg),
+							() =>
+								isAppFn
+									? modules.Integrations[isAppFn].invokables
+											.find((Invokable: any) => Invokable.name === k)
+											.fn(msg, io, socket)
+									: operations[k](io, socket)(msg),
 							"model"
 						)
-				  )
-		);
+				  );
+		});
 		return calls;
 	};

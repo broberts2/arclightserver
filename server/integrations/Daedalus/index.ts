@@ -1,8 +1,8 @@
-export default (
+module.exports = (
 	modules: {
 		[key: string]: any;
 	},
-	settings: { [key: string]: any }
+	publicURI: string
 ) => {
 	const _: { [key: string]: Function } = {
 		setup: async (Settings: any) => {},

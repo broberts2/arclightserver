@@ -1,1 +1,1 @@
-export default (modules: any, settings: { [key: string]: any }) => () => null;
+module.exports = (modules: any, publicURI: string) => () => null;

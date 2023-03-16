@@ -1,4 +1,5 @@
-export default (
+module.exports =
+	(
 		modules: { [key: string]: any },
 		name: string,
 		transforms: { [key: string]: Function }
@@ -14,12 +15,12 @@ export default (
 			if (b)
 				["json", "js"].map((s: string) =>
 					modules.fs.renameSync(
-						`${__dirname}/../../scripts/${msg.script.split(".")[0]}.${s}`,
-						`${__dirname}/../../scripts/${name.split(".")[0]}.${s}`
+						`${modules.rootDirectory}/scripts/${msg.script.split(".")[0]}.${s}`,
+						`${modules.rootDirectory}/scripts/${name.split(".")[0]}.${s}`
 					)
 				);
 			modules.fs.writeFileSync(
-				`${__dirname}/../../scripts/${name.split(".")[0]}.${
+				`${modules.rootDirectory}/scripts/${name.split(".")[0]}.${
 					msg.type === "Script Logic" ? "js" : "json"
 				}`,
 				msg.value,

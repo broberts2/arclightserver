@@ -1,4 +1,5 @@
-export default (modules: any, io: any, socket: any) =>
+module.exports =
+	(modules: any, io: any, socket: any) =>
 	async (token: string, cb: Function, name: string) => {
 		try {
 			const r = await modules._models.permissions.findOne({ name });

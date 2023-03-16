@@ -1,7 +1,10 @@
-import setupStaticDirectories from "./setupStaticDirectories";
-import setupPermissionsModel from "./setupPermissionsModel";
+const setupStaticDirectories = require("./setupStaticDirectories");
+const setupPermissionsModel = require("./setupPermissionsModel");
 
-export default async (
+module.exports = async (
+	rootDirectory: string,
+	port: number,
+	publicURI: string,
 	config: { [key: string]: any },
 	mongoose: { [key: string]: any },
 	Schema: any,
@@ -28,7 +31,7 @@ export default async (
 				keepAlive: true,
 			})
 			.then(null, (err: any) => new Error(err));
-	setupStaticDirectories(fs);
+	setupStaticDirectories(rootDirectory, fs);
 	const modules: {
 		[key: string]: { [key: string]: any };
 	} = {};
@@ -36,7 +39,7 @@ export default async (
 		[key: string]: { [key: string]: any };
 	} = {};
 	models["model"] = mongoose.model("model", new Schema({}, { strict: false }));
-	await setupPermissionsModel(models, BaseModelMod);
+	await setupPermissionsModel(models, BaseModelMod, publicURI);
 	const profile = await models.model.findOne({
 		_type: "profile",
 	});
@@ -67,7 +70,7 @@ export default async (
 					text: "Profiles",
 					icon: "id-badge",
 					subicon: "id-card",
-					metaimg: `http://localhost:7000/static/defaultart/profile.jpg`,
+					metaimg: `${publicURI}/static/defaultart/profile.jpg`,
 				},
 				BaseModelMod
 			)
@@ -109,7 +112,7 @@ export default async (
 					text: "Users",
 					icon: "users",
 					subicon: "user-gear",
-					metaimg: `http://localhost:7000/static/defaultart/user.jpg`,
+					metaimg: `${publicURI}/static/defaultart/user.jpg`,
 				},
 				BaseModelMod
 			)
@@ -136,7 +139,7 @@ export default async (
 					text: "Settings",
 					icon: "gears",
 					subicon: "gear",
-					metaimg: `http://localhost:7000/static/defaultart/settings.jpg`,
+					metaimg: `${publicURI}/static/defaultart/settings.jpg`,
 				},
 				BaseModelMod
 			)
@@ -199,7 +202,7 @@ export default async (
 					},
 					text: "Endpoints",
 					icon: "circle-nodes",
-					metaimg: `http://localhost:7000/static/defaultart/endpoint.jpg`,
+					metaimg: `${publicURI}/static/defaultart/endpoint.jpg`,
 				},
 				BaseModelMod
 			)
@@ -211,13 +214,13 @@ export default async (
 		adminProfile = await models.profile.create({
 			name: "administrator",
 			hierarchy: 0,
-			img: `http://localhost:7000/static/defaultart/profile.jpg`,
+			img: `${publicURI}/static/defaultart/profile.jpg`,
 		});
 	const serverSettings = await models.settings.findOne({});
 	if (!serverSettings)
 		models.settings.create({
 			name: "default",
-			img: `http://localhost:7000/static/defaultart/settings.jpg`,
+			img: `${publicURI}/static/defaultart/settings.jpg`,
 		});
 	const adminUser = await models.user.findOne({
 		username: "administrator",
@@ -228,7 +231,7 @@ export default async (
 			username: "administrator",
 			_password: Cryptr.encrypt("password"),
 			profiles: [adminProfile._id],
-			img: `http://localhost:7000/static/defaultart/user.jpg`,
+			img: `${publicURI}/static/defaultart/user.jpg`,
 		});
 	const pModels = await models.model.find({});
 	const pPermissions = await models.permissions.find({});
@@ -265,14 +268,18 @@ export default async (
 						edit: [adminProfileId],
 						delete: [adminProfileId],
 						publicread: false,
-						img: `http://localhost:7000/static/defaultart/permissions.jpg`,
+						img: `${publicURI}/static/defaultart/permissions.jpg`,
 					})
 			)
 	);
 	modules.Integrations = {};
-	modules.Scripts = collectScripts();
+	modules.Scripts = collectScripts(rootDirectory);
 	modules.runScripts = runScripts(modules);
-	modules.buildIntegrations = buildIntegrations(modules);
+	modules.buildIntegrations = buildIntegrations(
+		rootDirectory,
+		modules,
+		publicURI
+	);
 	modules.recursiveLookup = recursiveLookup(modules);
 	const r = runRoutes(modules);
 	["get", "post", "put", "delete"].map((s: string) =>
@@ -280,8 +287,9 @@ export default async (
 	);
 	SocketIO(
 		server,
-		config.port,
+		port,
 		Object.assign(modules, {
+			rootDirectory,
 			fs,
 			fetch,
 			mongoose,

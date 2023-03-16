@@ -7,7 +7,8 @@ const _f =
 		}
 	};
 
-export default (
+module.exports =
+	(
 		modules: { [key: string]: any },
 		name: string,
 		transforms: { [key: string]: Function }
@@ -16,11 +17,11 @@ export default (
 	async (msg: { [key: string]: any }) => {
 		try {
 			if (transforms.restrictions(io, socket, msg)) return;
-			const integrations = require(`${__dirname}/../../integrations.json`);
+			const integrations = require(`${modules.rootDirectory}/integrations.json`);
 			const prevActive = integrations[msg.integration].active;
 			integrations[msg.integration] = JSON.parse(msg.value);
 			modules.fs.writeFileSync(
-				`${__dirname}/../../integrations.json`,
+				`${modules.rootDirectory}/integrations.json`,
 				JSON.stringify(integrations),
 				{
 					encoding: "utf8",

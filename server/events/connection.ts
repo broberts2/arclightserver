@@ -1,4 +1,4 @@
-export default (
+module.exports = (
 	io: { [key: string]: any },
 	operations: { [key: string]: any }
 ) =>

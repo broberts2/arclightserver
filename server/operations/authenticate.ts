@@ -12,7 +12,8 @@ const c = (b: boolean, k: string, n: number) => {
 	return false;
 };
 
-export default (
+module.exports =
+	(
 		modules: { [key: string]: any },
 		name: string,
 		transforms: { [key: string]: Function }
@@ -84,6 +85,18 @@ export default (
 												? p.name.slice(0, p.name.length - 1)
 												: p.name;
 										calls[k.replace("records", `${n}s`)] = true;
+										if (
+											modules &&
+											modules.Integrations &&
+											modules.Integrations[n] &&
+											modules.Integrations[n].invokables
+										)
+											modules.Integrations[n].invokables.map(
+												(invokable: any) => {
+													if (invokable.permissions.includes(s))
+														calls[invokable.name] = true;
+												}
+											);
 									} else if (
 										!["integrations", "script"].find(
 											(el: string) => p.name === el

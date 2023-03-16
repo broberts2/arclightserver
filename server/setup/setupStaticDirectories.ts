@@ -1,5 +1,7 @@
-export default (fs: any) => {
+module.exports = (rootDirectory: string, fs: any) => {
 	["media", "scripts"].map((s: string) =>
-		!fs.existsSync(`${__dirname}/../../${s}`) ? fs.mkdirSync(`${s}`) : null
+		!fs.existsSync(`${rootDirectory}/${s}`)
+			? fs.mkdirSync(`${rootDirectory}/${s}`)
+			: null
 	);
 };

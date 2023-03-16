@@ -1,1 +1,1 @@
-export default () => () => console.log("daedalus");
+module.exports = () => () => console.log("daedalus");

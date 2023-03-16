@@ -1,4 +1,8 @@
-//import run from "./server/index";
-//@ts-ignore
-import run from "./dist/index.js";
-run(__dirname);
+const server = require("./server/index");
+//const server = require("@highmountainlabs/arclight-server");
+//const server = require("./dist/server/index");
+server({
+	rootDirectory: __dirname,
+	publicURI: `http://localhost:7000`,
+	port: 7000,
+});

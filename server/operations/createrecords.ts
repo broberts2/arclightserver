@@ -1,4 +1,5 @@
-export default (
+module.exports =
+	(
 		modules: { [key: string]: any },
 		name: string,
 		transforms: { [key: string]: Function }

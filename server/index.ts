@@ -1,19 +1,17 @@
-import express, { Express } from "express";
-import fs from "fs";
-import path from "path";
-import fetch from "node-fetch";
-import config from "./config";
-import SocketIO from "./socket.io";
-import Secrets from "./secrets";
-import mongoose from "mongoose";
-import vanguard from "./vanguard";
-import setup from "./setup";
-import runRoutes from "./runroutes";
-
-// @ts-ignore
-import jwt from "jsonwebtoken";
-// @ts-ignore
-import Cryptr from "cryptr";
+const express = require("express");
+const Express = express.Express;
+const fs = require("fs");
+const path = require("path");
+const nodeFetch = require("node-fetch");
+const config = require("./config");
+const SocketIO = require("./socket.io");
+const Secrets = require("./secrets");
+const mongoose = require("mongoose");
+const vanguard = require("./vanguard");
+const setup = require("./setup");
+const runRoutes = require("./runroutes");
+const jwt = require("jsonwebtoken");
+const Cryptr = require("cryptr");
 
 const Schema = mongoose.Schema;
 
@@ -66,60 +64,61 @@ const __buildModels = (models: any) => async () => {
 	});
 };
 
-const buildIntegrations = (modules: any) => () => {
-	if (!fs.existsSync(`${__dirname}/../integrations.json`)) {
-		const IntegrationsJSON: { [key: string]: any } = {};
-		fs.readdirSync(`${__dirname}/integrations`).map((e: string) => {
-			IntegrationsJSON[e] = JSON.parse(
-				fs.readFileSync(`${__dirname}/integrations/${e}/config.json`, {
+const buildIntegrations =
+	(rootDirectory: string, modules: any, publicURI: string) => () => {
+		if (!fs.existsSync(`${rootDirectory}/integrations.json`)) {
+			const IntegrationsJSON: { [key: string]: any } = {};
+			fs.readdirSync(`${__dirname}/integrations`).map((e: string) => {
+				IntegrationsJSON[e] = JSON.parse(
+					fs.readFileSync(`${__dirname}/integrations/${e}/config.json`, {
+						encoding: "utf8",
+					})
+				);
+			});
+			fs.writeFileSync(
+				`${rootDirectory}/integrations.json`,
+				JSON.stringify(IntegrationsJSON),
+				{
 					encoding: "utf8",
-				})
+				}
 			);
+		}
+		const settings = require(`${rootDirectory}/integrations.json`);
+		Object.keys(settings).map((k: string) => {
+			modules.Integrations[k] = require(`${__dirname}/integrations/${k}`)(
+				modules,
+				publicURI
+			);
+			fs.readdirSync(`${__dirname}/integrations/${k}/functions`).map(
+				(fn: string) => {
+					modules.Integrations[k][fn.split(".")[0]] =
+						require(`${__dirname}/integrations/${k}/functions/${fn}`)(
+							modules,
+							publicURI
+						);
+				}
+			);
+			return modules;
 		});
-		fs.writeFileSync(
-			`${__dirname}/../integrations.json`,
-			JSON.stringify(IntegrationsJSON),
-			{
-				encoding: "utf8",
-			}
-		);
-	}
-	const settings = require(`${__dirname}/../integrations.json`);
-	Object.keys(settings).map((k: string) => {
-		modules.Integrations[k] = require(`${__dirname}/integrations/${k}`).default(
-			modules,
-			settings[k]
-		);
-		fs.readdirSync(`${__dirname}/integrations/${k}/functions`).map(
-			(fn: string) => {
-				modules.Integrations[k][fn.split(".")[0]] =
-					require(`${__dirname}/integrations/${k}/functions/${fn}`).default(
-						modules,
-						settings[k]
-					);
-			}
-		);
+		Object.keys(settings).map((k: string) => {
+			if (settings[k].active && modules.Integrations[k].setup)
+				modules.Integrations[k].setup(settings[k]);
+		});
+		if (!modules.fs) modules.fs = fs;
 		return modules;
-	});
-	Object.keys(settings).map((k: string) => {
-		if (settings[k].active && modules.Integrations[k].setup)
-			modules.Integrations[k].setup(settings[k]);
-	});
-	if (!modules.fs) modules.fs = fs;
-	return modules;
-};
+	};
 
-const collectScripts = () => {
+const collectScripts = (rootDirectory: string) => {
 	const Scripts: { [key: string]: any } = {};
-	fs.readdirSync(`scripts`).map((e: string) => {
+	fs.readdirSync(`${rootDirectory}/scripts`).map((e: string) => {
 		const filenames = e.split(".");
 		if (filenames[1] === "js") {
 			const json = JSON.parse(
-				fs.readFileSync(`${__dirname}/scripts/${filenames[0]}.json`, {
+				fs.readFileSync(`${rootDirectory}/scripts/${filenames[0]}.json`, {
 					encoding: "utf8",
 				})
 			);
-			const js = fs.readFileSync(`scripts/${e}`, {
+			const js = fs.readFileSync(`${rootDirectory}/scripts/${e}`, {
 				encoding: "utf8",
 			});
 			if (!Scripts[json.context]) Scripts[json.context] = {};
@@ -182,20 +181,29 @@ const recursiveLookup =
 		return await runner(type, query);
 	};
 
-export default () => {
-	const app: Express = express();
+module.exports = (cfg: {
+	rootDirectory: string;
+	publicURI: string;
+	port: number;
+}) => {
+	const app: any = express();
 	["integrationsart", "defaultart"].map((s: string) =>
 		app.use(`/static/${s}`, express.static(path.join(__dirname, `${s}`)))
 	);
 	["media"].map((s: string) =>
-		app.use(`/static/${s}`, express.static(path.join(__dirname, `../${s}`)))
+		app.use(
+			`/static/${s}`,
+			express.static(path.join(cfg.rootDirectory, `/${s}`))
+		)
 	);
 	app.use(require("cors")());
 	app.use(express.json({ limit: "50mb" }));
 	app.use(express.urlencoded({ limit: "50mb" }));
 	const server = require("http").createServer(app);
-
 	setup(
+		cfg.rootDirectory,
+		cfg.port,
+		cfg.publicURI,
 		config,
 		mongoose,
 		Schema,
@@ -219,6 +227,6 @@ export default () => {
 		runScripts,
 		runRoutes,
 		recursiveLookup,
-		fetch
+		nodeFetch
 	);
 };
