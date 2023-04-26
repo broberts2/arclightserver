@@ -13,7 +13,6 @@ module.exports =
 	) => {
 		const v = modules.vanguard(modules, io, socket);
 		Object.keys(calls).map((k) => {
-			let IntegrationSettings: { [key: string]: any };
 			const isAppFn =
 				modules &&
 				modules.Integrations &&
@@ -27,7 +26,7 @@ module.exports =
 						: false
 				);
 			return Array.isArray(calls[k])
-				? calls[k].map((type: string) =>
+				? calls[k].map((type: string) => {
 						socket.on(`${k}_${type}`, (msg: { [key: string]: any }) =>
 							v(
 								token ? token : msg?._token,
@@ -39,8 +38,8 @@ module.exports =
 										: operations[k](io, socket)({ ...msg, _model: type }),
 								type
 							)
-						)
-				  )
+						);
+				  })
 				: socket.on(k, (msg: { [key: string]: any }) =>
 						v(
 							token ? token : msg?._token,

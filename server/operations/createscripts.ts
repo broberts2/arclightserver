@@ -10,8 +10,10 @@ module.exports =
 			const value = JSON.parse(msg.value);
 			["js", "json"].map((s: string, i: number) =>
 				modules.fs.writeFileSync(
-					`${modules.rootDirectory}/scripts/${value.name.split(".")[0]}.${s}`,
-					i ? JSON.stringify(value) : `async (ServerObject) => {\n\n};`,
+					`${modules.rootDirectory}/scripts/${msg.ctx}/${
+						value.name.split(".")[0]
+					}.${s}`,
+					i ? JSON.stringify(value) : `async (ServerObject, Ctx) => {\n\n};`,
 					{
 						encoding: "utf8",
 					}
@@ -19,9 +21,9 @@ module.exports =
 			);
 			if (!modules.Scripts) modules.Scripts = {};
 			if (!modules.Scripts[msg.ctx]) modules.Scripts[msg.ctx] = {};
-			modules.Scripts[msg.ctx][value.name] = {
+			modules.Scripts[msg.ctx][value.name.split(".")[0]] = {
 				metadata: JSON.stringify(value),
-				fn: `async (ServerObject) => {
+				fn: `async (ServerObject, Ctx) => {
 
 				};
 				`,

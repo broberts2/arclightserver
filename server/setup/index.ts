@@ -49,6 +49,8 @@ module.exports = async (
 				{
 					_type: "profile",
 					_system: true,
+					_managed: undefined,
+					_managedid: undefined,
 					name: {
 						_type: "String",
 						type: String,
@@ -140,6 +142,81 @@ module.exports = async (
 					icon: "gears",
 					subicon: "gear",
 					metaimg: `${publicURI}/static/defaultart/settings.jpg`,
+				},
+				BaseModelMod
+			)
+		);
+	const theme = await models.model.findOne({ _type: "theme" });
+	if (!theme)
+		await models.model.create(
+			Object.assign(
+				{
+					_system: true,
+					_type: "theme",
+					name: {
+						_type: "String",
+						type: String,
+						unique: true,
+						required: true,
+					},
+					img: {
+						_type: "String",
+						type: String,
+						unique: false,
+						required: false,
+					},
+					fontfamily: {
+						_type: "String",
+						type: String,
+						unique: true,
+						required: true,
+					},
+					primarytextcolor: {
+						_type: "String",
+						type: String,
+						unique: true,
+						required: true,
+					},
+					secondarytextcolor: {
+						_type: "String",
+						type: String,
+						unique: true,
+						required: true,
+					},
+					backgroundprimarycolor: {
+						_type: "String",
+						type: String,
+						unique: true,
+						required: true,
+					},
+					backgroundsecondarycolor: {
+						_type: "String",
+						type: String,
+						unique: true,
+						required: true,
+					},
+					backgroundtertiarycolor: {
+						_type: "String",
+						type: String,
+						unique: true,
+						required: true,
+					},
+					backgroundquarternarycolor: {
+						_type: "String",
+						type: String,
+						unique: true,
+						required: true,
+					},
+					backgroundquinarycolor: {
+						_type: "String",
+						type: String,
+						unique: true,
+						required: true,
+					},
+					text: "Themes",
+					icon: "paintbrush",
+					subicon: "paintbrush",
+					metaimg: `${publicURI}/static/defaultart/theme.jpg`,
 				},
 				BaseModelMod
 			)
@@ -267,7 +344,8 @@ module.exports = async (
 						read: [adminProfileId],
 						edit: [adminProfileId],
 						delete: [adminProfileId],
-						publicread: false,
+						publicread: model._type === "theme",
+						recursiveinit: false,
 						img: `${publicURI}/static/defaultart/permissions.jpg`,
 					})
 			)
@@ -285,6 +363,7 @@ module.exports = async (
 	["get", "post", "put", "delete"].map((s: string) =>
 		app[s]("/api/:endpoint", (req: any, res: any) => r(req, res))
 	);
+	modules.globals = { publicURI };
 	SocketIO(
 		server,
 		port,

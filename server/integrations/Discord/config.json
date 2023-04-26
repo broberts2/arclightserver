@@ -1,7 +1,11 @@
 {
 	"active": false,
 	"settings": {
+		"default_guild": "",
+		"autosync_users": false,
 		"autosync_profiles": false,
+		"desyncusers_on_deactivate": false,
+		"desyncusers_on_leave": false,
 		"endpoints_active": false
 	},
 	"decorators": {

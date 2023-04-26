@@ -1,17 +1,20 @@
 module.exports =
 	(Modules: any, publicURI: string) => async (Settings: any, fn?: Function) => {
 		const R = await Modules._models.model.findOne({
-			_type: "lolgamestats",
+			_type: "(M) lolgamestats",
+			_managed: "LoL Tournament API",
 		});
 		const P = await Modules._models.permissions.findOne({
-			name: "lolgamestats",
+			name: "(M) lolgamestats",
+			_managed: "LoL Tournament API",
 		});
 		if (Settings.active && !R) {
 			let _r;
 			if (!R)
 				_r = await Modules._models.model.insertMany({
 					_system: true,
-					_type: "lolgamestats",
+					_managed: "LoL Tournament API",
+					_type: "(M) lolgamestats",
 					text: "LoL Game Stats",
 					icon: "phoenix-framework",
 					metaimg: `${publicURI}/static/media/riotxlol.jpg`,
@@ -72,8 +75,9 @@ module.exports =
 					.then((p: any) => p._id);
 				await Modules._models.permissions.insertMany({
 					_system: true,
+					_managed: "LoL Tournament API",
 					_lookupmodel: R ? R._id : _r ? _r._id : undefined,
-					name: "lolgamestats",
+					name: "(M) lolgamestats",
 					create: [adminProfileId],
 					read: [adminProfileId],
 					edit: [adminProfileId],
@@ -82,15 +86,21 @@ module.exports =
 					img: `${publicURI}/static/media/riotxlol.jpg`,
 				});
 			}
-			if (fn) fn("lolgamestats");
+			if (fn) fn("(M) lolgamestats");
 			if (fn) fn("permissions");
 		} else if (!Settings.active) {
 			if (R) {
-				await Modules._models.model.deleteOne({ _type: "lolgamestats" });
-				if (fn) fn("lolgamestats");
+				await Modules._models.model.deleteOne({
+					_type: "(M) lolgamestats",
+					_managed: "LoL Tournament API",
+				});
+				if (fn) fn("(M) lolgamestats");
 			}
 			if (P) {
-				await Modules._models.permissions.deleteOne({ name: "lolgamestats" });
+				await Modules._models.permissions.deleteOne({
+					name: "(M) lolgamestats",
+					_managed: "LoL Tournament API",
+				});
 				if (fn) fn("permissions");
 			}
 		}

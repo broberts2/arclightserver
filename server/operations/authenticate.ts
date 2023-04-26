@@ -103,7 +103,16 @@ module.exports =
 										)
 									) {
 										if (!calls[k]) calls[k] = p.name === "model" ? true : [];
-										if (p.name !== "model") return calls[k].push(p.name);
+										if (p.name !== "model") {
+											if (p.recursiveinit) {
+												if (!calls.recursiveinit) calls.recursiveinit = [];
+												if (
+													!calls.recursiveinit.find((s: string) => s === p.name)
+												)
+													calls.recursiveinit.push(p.name);
+											}
+											return calls[k].push(p.name);
+										}
 									}
 								}
 							}

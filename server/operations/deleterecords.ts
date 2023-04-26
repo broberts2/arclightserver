@@ -8,16 +8,33 @@ module.exports =
 	async (msg: any) => {
 		try {
 			if (transforms.restrictions(io, socket, msg)) return;
-			await modules.runScripts("before-delete", io, socket)(msg);
+			const _beforedelete = await modules._models[msg._model].find({
+				_id: { $in: [msg._id] },
+			});
+			try {
+				await modules.runScripts(
+					"before-delete",
+					io,
+					socket
+				)({ msg, records: _beforedelete });
+			} catch (e) {
+				console.log(e);
+				return;
+			}
 			const records = await modules._models[msg._model][
 				msg.search || !msg._id ? "deleteMany" : "deleteOne"
 			](msg.search ? msg.search : { _id: msg._id });
+			try {
+				await modules.runScripts("after-delete", io, socket)({ msg, records });
+			} catch (e) {
+				console.log(e);
+				return;
+			}
 			io.to(socket.id).emit(`${name}_${msg._model}`, {
 				[msg._model]: records,
 				_triggerFetch: true,
 			});
-			await modules.runScripts("after-delete", io, socket)(msg);
-			io.to(socket.id).emit(`serversuccess`, {
+			return io.to(socket.id).emit(`serversuccess`, {
 				code: 203,
 				msg: `Delete successful.`,
 			});

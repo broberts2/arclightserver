@@ -19,7 +19,7 @@ const BaseModelMod: { [key: string]: any } = {};
 
 const Jwt = {
 	sign: (data: { [key: string]: any }) =>
-		jwt.sign(data, Secrets.jwt, { expiresIn: "1h" }),
+		jwt.sign(data, Secrets.jwt, { expiresIn: "1d" }),
 	verify: (data: { [key: string]: any }) => {
 		if (!data)
 			return {
@@ -110,23 +110,29 @@ const buildIntegrations =
 
 const collectScripts = (rootDirectory: string) => {
 	const Scripts: { [key: string]: any } = {};
-	fs.readdirSync(`${rootDirectory}/scripts`).map((e: string) => {
-		const filenames = e.split(".");
-		if (filenames[1] === "js") {
-			const json = JSON.parse(
-				fs.readFileSync(`${rootDirectory}/scripts/${filenames[0]}.json`, {
+	fs.readdirSync(`${rootDirectory}/scripts`).map((ctx: string) =>
+		fs.readdirSync(`${rootDirectory}/scripts/${ctx}`).map((e: string) => {
+			const filenames = e.split(".");
+			if (filenames[1] === "js") {
+				const json = JSON.parse(
+					fs.readFileSync(
+						`${rootDirectory}/scripts/${ctx}/${filenames[0]}.json`,
+						{
+							encoding: "utf8",
+						}
+					)
+				);
+				const js = fs.readFileSync(`${rootDirectory}/scripts/${ctx}/${e}`, {
 					encoding: "utf8",
-				})
-			);
-			const js = fs.readFileSync(`${rootDirectory}/scripts/${e}`, {
-				encoding: "utf8",
-			});
-			if (!Scripts[json.context]) Scripts[json.context] = {};
-			Scripts[json.context][e] = {};
-			Scripts[json.context][e].metadata = JSON.stringify(json);
-			Scripts[json.context][e].fn = js.toString();
-		}
-	});
+				});
+				if (!Scripts[json.context]) Scripts[json.context] = {};
+				const k = e.split(".")[0];
+				Scripts[json.context][k] = {};
+				Scripts[json.context][k].metadata = JSON.stringify(json);
+				Scripts[json.context][k].fn = js.toString();
+			}
+		})
+	);
 	return Scripts;
 };
 
@@ -134,10 +140,10 @@ const runScripts =
 	(modules: any) => (ctx: string, io: any, socket: any) => (msg: any) => {
 		if (modules.Scripts[ctx]) {
 			Object.keys(modules.Scripts[ctx])
-				.filter(
-					(script: string) =>
-						JSON.parse(modules.Scripts[ctx][script].metadata).active
-				)
+				.filter((script: string) => {
+					const _ = JSON.parse(modules.Scripts[ctx][script].metadata);
+					return _.active && _.context === ctx && msg.msg._model === _.model;
+				})
 				.map((script: string) => {
 					const _ = eval(modules.Scripts[ctx][script].fn);
 					return typeof _ === "function" ? _(modules, msg) : null;
@@ -188,7 +194,7 @@ module.exports = (cfg: {
 }) => {
 	const app: any = express();
 	["integrationsart", "defaultart"].map((s: string) =>
-		app.use(`/static/${s}`, express.static(path.join(__dirname, `${s}`)))
+		app.use(`/static/${s}`, express.static(path.join(__dirname, `../${s}`)))
 	);
 	["media"].map((s: string) =>
 		app.use(
