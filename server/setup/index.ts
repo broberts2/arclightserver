@@ -73,6 +73,7 @@ module.exports = async (
 					icon: "id-badge",
 					subicon: "id-card",
 					metaimg: `${publicURI}/static/defaultart/profile.jpg`,
+					category: "",
 				},
 				BaseModelMod
 			)
@@ -115,6 +116,7 @@ module.exports = async (
 					icon: "users",
 					subicon: "user-gear",
 					metaimg: `${publicURI}/static/defaultart/user.jpg`,
+					category: "",
 				},
 				BaseModelMod
 			)
@@ -138,10 +140,17 @@ module.exports = async (
 						unique: false,
 						required: false,
 					},
+					userregistration: {
+						_type: "Boolean",
+						type: Boolean,
+						unique: false,
+						required: false,
+					},
 					text: "Settings",
 					icon: "gears",
 					subicon: "gear",
 					metaimg: `${publicURI}/static/defaultart/settings.jpg`,
+					category: "",
 				},
 				BaseModelMod
 			)
@@ -217,6 +226,7 @@ module.exports = async (
 					icon: "paintbrush",
 					subicon: "paintbrush",
 					metaimg: `${publicURI}/static/defaultart/theme.jpg`,
+					category: "",
 				},
 				BaseModelMod
 			)
@@ -280,6 +290,7 @@ module.exports = async (
 					text: "Endpoints",
 					icon: "circle-nodes",
 					metaimg: `${publicURI}/static/defaultart/endpoint.jpg`,
+					category: "",
 				},
 				BaseModelMod
 			)
@@ -298,6 +309,7 @@ module.exports = async (
 		models.settings.create({
 			name: "default",
 			img: `${publicURI}/static/defaultart/settings.jpg`,
+			userregistration: true,
 		});
 	const adminUser = await models.user.findOne({
 		username: "administrator",

@@ -28,7 +28,7 @@ module.exports =
 				};
 				`,
 			};
-			io.to(socket.id).emit(`getscripts`, modules.Scripts);
+			io.to(socket.id).emit(`getscripts`, { records: modules.Scripts });
 			return io.to(socket.id).emit(`serversuccess`, {
 				code: 202,
 				msg: `Create successful.`,

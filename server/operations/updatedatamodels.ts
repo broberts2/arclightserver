@@ -17,7 +17,7 @@ module.exports =
 			);
 			io.to(socket.id).emit(`updatedatamodels`, {
 				[msg._model]: records,
-				_triggerFetch: true,
+				//_triggerFetch: true,
 			});
 			io.to(socket.id).emit(`serversuccess`, {
 				code: 202,

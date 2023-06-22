@@ -1,4 +1,9 @@
-const { Client, IntentsBitField, Intents } = require("discord.js");
+const {
+	Client,
+	IntentsBitField,
+	Intents,
+	PermissionFlagsBits,
+} = require("discord.js");
 const intents = new IntentsBitField();
 intents.add(
 	IntentsBitField.Flags.Guilds,
@@ -49,5 +54,6 @@ module.exports = (
 	};
 	_.Discord = Discord;
 	_.API = DiscordAPI;
+	_.PermissionFlagsBits = PermissionFlagsBits;
 	return _;
 };

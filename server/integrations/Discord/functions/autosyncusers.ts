@@ -4,7 +4,7 @@ module.exports = (modules: { [key: string]: any }) => async (Settings: any) => {
 			_managedid: u.id,
 			_managed: "Discord",
 			_system: true,
-			username: `(M) ${u.username}#${u.discriminator}`,
+			username: `(M) ${u.username}`,
 			img: `${modules.globals.publicURI}/static/integrationsart/discord.jpg`,
 		});
 	const deleteuser = async (role: { [key: string]: any }) =>
@@ -38,8 +38,12 @@ module.exports = (modules: { [key: string]: any }) => async (Settings: any) => {
 				{
 					profiles:
 						a.length > b.length
-							? u.profiles.concat(profiles)
-							: u.profiles.filter((p: string) => !profiles.includes(p)),
+							? u.profiles
+								? u.profiles.concat(profiles)
+								: (u.profiles = [profiles])
+							: u.profiles
+							? u.profiles.filter((p: string) => !profiles.includes(p))
+							: (u.profiles = []),
 				}
 			);
 		}
@@ -74,7 +78,7 @@ module.exports = (modules: { [key: string]: any }) => async (Settings: any) => {
 					!du.user.bot &&
 					!users.find(
 						(u: { [key: string]: any }) =>
-							u.username === `(M) ${du.user.username}#${du.user.discriminator}`
+							u.username === `(M) ${du.user.username}`
 					)
 				)
 					return await createuser(du.user);

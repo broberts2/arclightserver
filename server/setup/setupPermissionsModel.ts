@@ -48,6 +48,7 @@ module.exports = async (models: any, BaseModelMod: any, publicURI: string) => {
 					icon: "shield",
 					subicon: "user-shield",
 					metaimg: `${publicURI}/static/defaultart/permissions.jpg`,
+					category: "",
 				},
 				BaseModelMod
 			)

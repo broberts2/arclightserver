@@ -15,9 +15,12 @@ module.exports =
 				const records = recursive
 					? await modules.recursiveLookup(msg._model, msg?.search)
 					: await modules._models[msg._model].find(msg?.search);
+				const totalcount = await modules._models[msg._model].count(msg?.search);
 				await modules.runScripts("after-get", io, socket)(msg);
-				return io.to(socket.id).emit(`${name}_${msg._model}`, {
-					[msg._model]: records,
+				return io.to(socket.id).emit(`getrecords_${msg._model}`, {
+					index: "init",
+					records,
+					totalcount,
 				});
 			} catch (msg) {
 				return io.to(socket.id).emit(`servererror`, {

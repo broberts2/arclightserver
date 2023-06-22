@@ -11,16 +11,13 @@ module.exports =
 			const before = await modules._models[msg._model].find({
 				_id: { $in: [msg._id] },
 			});
-			try {
-				await modules.runScripts(
-					"before-update",
-					io,
-					socket
-				)({ msg, records: { before } });
-			} catch (e) {
-				console.log(e);
-				return;
-			}
+			const beforeUpdate = await modules.runScripts(
+				"before-update",
+				io,
+				socket
+			)({ msg, records: { before } });
+			if (beforeUpdate && !beforeUpdate.success)
+				throw new Error(`Script Error: ${beforeUpdate.error}`);
 			const records = await modules._models[msg._model][
 				msg.search || !msg._id ? "updateMany" : "updateOne"
 			](
@@ -30,26 +27,22 @@ module.exports =
 			const after = await modules._models[msg._model].find({
 				_id: { $in: [msg._id] },
 			});
-			try {
-				await modules.runScripts(
-					"after-update",
-					io,
-					socket
-				)({ msg, records: { before, after } });
-			} catch (e) {
-				console.log(e);
-				return;
-			}
+			const afterUpdate = await modules.runScripts(
+				"after-update",
+				io,
+				socket
+			)({ msg, records: { before, after } });
+			if (afterUpdate && !afterUpdate.success)
+				throw new Error(`Script Error: ${afterUpdate.error}`);
 			io.to(socket.id).emit(`${name}_${msg._model}`, {
 				[msg._model]: records,
-				_triggerFetch: true,
+				//_triggerFetch: true,
 			});
 			io.to(socket.id).emit(`serversuccess`, {
 				code: 202,
 				msg: `Update successful.`,
 			});
 		} catch (e: any) {
-			console.log(e);
 			io.to(socket.id).emit(`servererror`, {
 				code: 500,
 				msg: e.message,

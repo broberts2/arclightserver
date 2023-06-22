@@ -40,7 +40,8 @@ module.exports =
 							)
 						);
 				  })
-				: socket.on(k, (msg: { [key: string]: any }) =>
+				: socket.on(k, (msg: { [key: string]: any }) => {
+						if (k === "registeruser") return operations[k](io, socket)(msg);
 						v(
 							token ? token : msg?._token,
 							() =>
@@ -50,8 +51,8 @@ module.exports =
 											.fn(msg, io, socket)
 									: operations[k](io, socket)(msg),
 							"model"
-						)
-				  );
+						);
+				  });
 		});
 		return calls;
 	};

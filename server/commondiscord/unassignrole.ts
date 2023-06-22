@@ -6,7 +6,7 @@ module.exports =
 		if (D.mnemonics.guild && !(typeof guild[Symbol.iterator] === "function")) {
 			const role = await API.getrole(rid);
 			const member = await API.getmember(uid);
-			return await member.roles.remove(role.id);
+			if (member.roles) return await member.roles.remove(role.id);
 		}
 		return;
 	};

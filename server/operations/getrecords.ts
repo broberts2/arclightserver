@@ -8,6 +8,7 @@ module.exports =
 	async (msg: { [key: string]: any }) => {
 		if (modules._models[msg._model]) {
 			try {
+				const index = msg.index;
 				const recursive = msg._recursive;
 				const limit = msg.search ? msg.search.limit : null;
 				const sort = msg.search ? msg.search.sort : null;
@@ -18,17 +19,13 @@ module.exports =
 					delete msg.search.sort;
 				}
 				delete msg._recursive;
+				delete msg.index;
 				if (transforms.restrictions(io, socket, msg)) return;
-				try {
-					await modules.runScripts(
-						"before-get",
-						io,
-						socket
-					)({ msg, records: null });
-				} catch (e) {
-					console.log(e);
-					return;
-				}
+				await modules.runScripts(
+					"before-get",
+					io,
+					socket
+				)({ msg, records: null });
 				const totalcount = await modules._models[msg._model].count(msg?.search);
 				const records = recursive
 					? await modules
@@ -41,14 +38,11 @@ module.exports =
 							.skip(skip)
 							.limit(limit)
 							.sort(sort);
-				try {
-					await modules.runScripts("after-get", io, socket)({ msg, records });
-				} catch (e) {
-					console.log(e);
-					return;
-				}
+				await modules.runScripts("after-get", io, socket)({ msg, records });
 				return io.to(socket.id).emit(`${name}_${msg._model}`, {
-					[msg._model]: { records, totalcount },
+					index,
+					records,
+					totalcount,
 				});
 			} catch (msg) {
 				return io.to(socket.id).emit(`servererror`, {

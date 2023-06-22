@@ -28,7 +28,7 @@ module.exports =
 			return;
 		}
 		modules.Scripts[msg.ctx][value.name.split(".")[0]] = undefined;
-		io.to(socket.id).emit(`getscripts`, modules.Scripts);
+		io.to(socket.id).emit(`getscripts`, { records: modules.Scripts });
 		io.to(socket.id).emit(`serversuccess`, {
 			code: 203,
 			msg: `Delete successful.`,

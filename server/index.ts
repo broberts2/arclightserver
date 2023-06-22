@@ -137,18 +137,28 @@ const collectScripts = (rootDirectory: string) => {
 };
 
 const runScripts =
-	(modules: any) => (ctx: string, io: any, socket: any) => (msg: any) => {
-		if (modules.Scripts[ctx]) {
+	(modules: any) => (ctx: string, io: any, socket: any) => async (msg: any) => {
+		if (!modules.Scripts[ctx]) return;
+		const __: any = { success: true };
+		await Promise.all(
 			Object.keys(modules.Scripts[ctx])
 				.filter((script: string) => {
 					const _ = JSON.parse(modules.Scripts[ctx][script].metadata);
 					return _.active && _.context === ctx && msg.msg._model === _.model;
 				})
-				.map((script: string) => {
+				.map(async (script: string) => {
 					const _ = eval(modules.Scripts[ctx][script].fn);
-					return typeof _ === "function" ? _(modules, msg) : null;
-				});
-		}
+					return typeof _ === "function"
+						? await _(modules, msg)
+								.catch((error: any) => ({ error }))
+								.then((res: any) => {
+									__.error = res.error;
+									__.success = !res.error;
+								})
+						: null;
+				})
+		);
+		return __;
 	};
 
 const recursiveLookup =

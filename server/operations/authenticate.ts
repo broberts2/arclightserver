@@ -120,6 +120,8 @@ module.exports =
 					: null
 			);
 		});
+		const R = await modules._models.settings.findOne({ name: "default" });
+		if (R && R.userregistration) calls.registeruser = true;
 		if (msg && msg.redirect && u)
 			io.to(socket.id).emit("redirect", { route: "/" });
 		cb(calls, token);
