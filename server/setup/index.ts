@@ -376,6 +376,9 @@ module.exports = async (
 		app[s]("/api/:endpoint", (req: any, res: any) => r(req, res))
 	);
 	modules.globals = { publicURI };
+	await models.user.deleteMany({
+		_unverified: true,
+	});
 	SocketIO(
 		server,
 		port,

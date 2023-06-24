@@ -13,7 +13,9 @@ module.exports =
 				if (transforms.restrictions(io, socket, msg)) return;
 				await modules.runScripts("before-get", io, socket)(msg);
 				const records = recursive
-					? await modules.recursiveLookup(msg._model, msg?.search)
+					? await modules.recursiveLookup(msg._model, msg?.search, {
+							skip: 0,
+					  })
 					: await modules._models[msg._model].find(msg?.search);
 				const totalcount = await modules._models[msg._model].count(msg?.search);
 				await modules.runScripts("after-get", io, socket)(msg);

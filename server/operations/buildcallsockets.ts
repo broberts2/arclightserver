@@ -30,18 +30,23 @@ module.exports =
 						socket.on(`${k}_${type}`, (msg: { [key: string]: any }) =>
 							v(
 								token ? token : msg?._token,
-								() =>
+								(userId: any) =>
 									isAppFn
 										? modules.Integrations[isAppFn].invokables
 												.find((Invokable: any) => Invokable.name === k)
 												.fn(msg, io, socket)
-										: operations[k](io, socket)({ ...msg, _model: type }),
+										: operations[k](
+												io,
+												socket
+										  )({ ...msg, _model: type, userId }),
 								type
 							)
 						);
 				  })
 				: socket.on(k, (msg: { [key: string]: any }) => {
 						if (k === "registeruser") return operations[k](io, socket)(msg);
+						else if (k === "verifyregisteruser")
+							return operations[k](io, socket)(msg);
 						v(
 							token ? token : msg?._token,
 							() =>

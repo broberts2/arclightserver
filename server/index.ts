@@ -162,13 +162,22 @@ const runScripts =
 	};
 
 const recursiveLookup =
-	(modules: any) => async (type: string, query?: { [key: string]: any }) => {
+	(modules: any) =>
+	async (
+		type: string,
+		query: { [key: string]: any },
+		pagination: { [key: string]: any }
+	) => {
 		const Terminators: { [key: string]: boolean } = {};
 		const M: any = {};
 		const _ = await modules._models.model.find();
 		if (_) _.map((o: any) => (M[o._type] = o));
 		const runner = async (type: string, query?: { [key: string]: any }) => {
-			const R = await modules._models[type].find(query ? query : {});
+			const R = await modules._models[type]
+				.find(query ? query : {})
+				.skip(pagination.skip)
+				.limit(pagination.limit)
+				.sort(pagination.sort);
 			return await Promise.all(
 				R.map(async (record: any) => {
 					const _: { [key: string]: any } = {};

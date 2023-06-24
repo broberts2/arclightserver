@@ -121,7 +121,10 @@ module.exports =
 			);
 		});
 		const R = await modules._models.settings.findOne({ name: "default" });
-		if (R && R.userregistration) calls.registeruser = true;
+		if (R && R.userregistration) {
+			calls.registeruser = true;
+			calls.verifyregisteruser = true;
+		}
 		if (msg && msg.redirect && u)
 			io.to(socket.id).emit("redirect", { route: "/" });
 		cb(calls, token);
