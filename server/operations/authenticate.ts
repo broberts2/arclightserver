@@ -71,7 +71,7 @@ module.exports =
 							const k = key(s, p.name === "model");
 							if (k) {
 								if (
-									p.publicread ||
+									(p.publicread && s === "read") ||
 									(u && u.profiles && u.profiles.includes(id.toString()))
 								) {
 									if (

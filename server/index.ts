@@ -207,9 +207,11 @@ const recursiveLookup =
 	};
 
 module.exports = (cfg: {
+	database: string;
 	rootDirectory: string;
 	publicURI: string;
 	port: number;
+	cert?: { [key: string]: any };
 }) => {
 	const app: any = express();
 	["integrationsart", "defaultart"].map((s: string) =>
@@ -224,12 +226,14 @@ module.exports = (cfg: {
 	app.use(require("cors")());
 	app.use(express.json({ limit: "50mb" }));
 	app.use(express.urlencoded({ limit: "50mb" }));
-	const server = require("http").createServer(app);
+	let server;
+	if (cfg.cert) server = require("https").createServer(cfg.cert, app);
+	else server = require("http").createServer(app);
 	setup(
 		cfg.rootDirectory,
 		cfg.port,
 		cfg.publicURI,
-		config,
+		Object.assign(config, { database: cfg.database }),
 		mongoose,
 		Schema,
 		BaseModelMod,
