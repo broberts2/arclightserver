@@ -33,24 +33,47 @@ module.exports = (
 	},
 	publicURI: string
 ) => {
-	const _: { [key: string]: Function } = {
+	const _: {
+		[key: string]:
+			| Function
+			| Array<{ permissions: Array<string>; fn: Function; name: string }>;
+	} = {
 		Discord,
 		setup: async (Settings: any) => {
+			await modules.Integrations.Discord.manageapppermissions(Settings);
 			await modules.Integrations.Discord.authenticate(Settings);
 			await modules.Integrations.Discord.autosyncprofiles(Settings);
 			await modules.Integrations.Discord.autosyncusers(Settings);
 			await modules.Integrations.Discord.managescripts(Settings);
 		},
 		onUpdate: async (Settings: any) => {
+			await modules.Integrations.Discord.manageapppermissions(Settings);
 			await modules.Integrations.Discord.authenticate(Settings);
 			await modules.Integrations.Discord.autosyncprofiles(Settings);
 			await modules.Integrations.Discord.autosyncusers(Settings);
 			await modules.Integrations.Discord.managescripts(Settings);
 		},
 		onDeactivate: async (Settings: any) => {
+			await modules.Integrations.Discord.manageapppermissions(Settings);
 			await modules.Integrations.Discord.ondeactivate(Settings);
 			await modules.Integrations.Discord.managescripts(Settings);
 		},
+		invokables: [
+			{
+				permissions: ["publicread"],
+				name: "DiscordOATH2",
+				fn: async (msg: { [key: string]: any }, io: any, socket: any) => {
+					const Settings =
+						require(`${modules.rootDirectory}/integrations.json`)["Discord"];
+					await modules.Integrations["Discord"].oath2(
+						Settings,
+						msg,
+						io,
+						socket
+					);
+				},
+			},
+		],
 	};
 	_.Discord = Discord;
 	_.API = DiscordAPI;

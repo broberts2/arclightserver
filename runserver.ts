@@ -6,8 +6,8 @@ const root = "/etc/letsencrypt/live/<my_domain>";
 server({
 	rootDirectory: __dirname,
 	database: "arclight",
-	publicURI: `http://localhost:7000`,
-	port: 7000,
+	publicURI: `http://localhost:7001`,
+	port: 7001,
 	// cert: {
 	// 	key: `${root}/privkey.pem`,
 	// 	cert: `${root}/cert.pem`,

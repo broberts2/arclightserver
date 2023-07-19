@@ -1,7 +1,12 @@
 module.exports = (rootDirectory: string, fs: any) => {
-	["media", "scripts"].map((s: string) =>
+	["media", "scripts", "forms"].map((s: string) =>
 		!fs.existsSync(`${rootDirectory}/${s}`)
 			? fs.mkdirSync(`${rootDirectory}/${s}`)
+			: null
+	);
+	["templates", "documents"].map((s: string) =>
+		!fs.existsSync(`${rootDirectory}/forms/${s}`)
+			? fs.mkdirSync(`${rootDirectory}/forms/${s}`)
 			: null
 	);
 	["create", "delete", "get", "update"].map((__: string) =>

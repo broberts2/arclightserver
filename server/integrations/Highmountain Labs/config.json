@@ -1,0 +1,9 @@
+{
+	"active": false,
+	"settings": { "endpoints_active": false },
+	"decorators": {
+		"description": "Manages subscriptions with Highmountain Labs.",
+		"img": "static/integrationsart/hml.jpg"
+	},
+	"apivalues": {}
+}

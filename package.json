@@ -18,7 +18,9 @@
 	"nodemonConfig": {
 		"ignore": [
 			"integrations.json",
-			"scripts/**"
+			"scripts/**",
+			"reports/**",
+			"forms/**"
 		]
 	},
 	"keywords": [],

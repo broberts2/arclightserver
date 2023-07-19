@@ -6,7 +6,8 @@ module.exports = (
 ) => {
 	const _: { [key: string]: Function | Object } = {
 		setup: async (Settings: any) => {
-			modules.Integrations.Skywatch.buildstations(Settings);
+			//await modules.Integrations.Skywatch.buildmodel(Settings);
+			//await modules.Integrations.Skywatch.checkstations(Settings);
 		},
 		onUpdate: async (Settings: any) => {},
 		onDeactivate: async (Settings: any) => {},

@@ -1,3 +1,11 @@
+const _exceptionCases = (s: string) => {
+	if (s.includes("datamodels")) return "model";
+	else if (s.includes("form")) return "form";
+	else if (s.includes("formtemplates")) return "form template";
+	else if (s.includes("integrations")) return "integrations";
+	else if (s.includes("scripts")) return "script";
+};
+
 module.exports =
 	(
 		modules: { [key: string]: any },
@@ -44,8 +52,22 @@ module.exports =
 						);
 				  })
 				: socket.on(k, (msg: { [key: string]: any }) => {
-						if (k === "registeruser") return operations[k](io, socket)(msg);
-						else if (k === "verifyregisteruser")
+						let Invokable;
+						if (isAppFn) {
+							Invokable = modules.Integrations[isAppFn].invokables.find(
+								(Invokable: any) => Invokable.name === k
+							);
+							if (
+								Invokable &&
+								Invokable.permissions.some((p: string) =>
+									["publicread"].find((el: string) => el === p)
+								)
+							)
+								return modules.Integrations[isAppFn].invokables
+									.find((Invokable: any) => Invokable.name === k)
+									.fn(msg, io, socket);
+						}
+						if (k === "registeruser" || k === "verifyregisteruser")
 							return operations[k](io, socket)(msg);
 						v(
 							token ? token : msg?._token,
@@ -55,7 +77,7 @@ module.exports =
 											.find((Invokable: any) => Invokable.name === k)
 											.fn(msg, io, socket)
 									: operations[k](io, socket)(msg),
-							"model"
+							_exceptionCases(k)
 						);
 				  });
 		});
