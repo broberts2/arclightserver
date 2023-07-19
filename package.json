@@ -1,30 +1,36 @@
 {
 	"name": "@highmountainlabs/arclight-server",
-	"version": "0.1.18",
-	"main": "dist/server/index.js",
-	"files": [
-		"dist"
-	],
-	"types": "dist/index.d.ts",
+	"version": "0.2.16",
+	"main": "server/index.js",
+	"module": "server/index.mjs",
+	"types": "server/index.d.ts",
 	"description": "",
 	"browser": false,
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"link-test": "npm-link && npm start",
+		"link": "npm unlink @highmountainlabs/arclight-server && npm run build && cd dist && npm link && cd .. && npm link @highmountainlabs/arclight-server",
+		"publish-test": "npm run build && cd dist && npm publish --dry-run && cd ..",
+		"publish": "npm run build && cd dist && npm publish && cd ..",
 		"start": "nodemon runserver.ts",
-		"rollup": "npm run remove-dist & rollup -c",
+		"build": "npm run remove-dist & rollup -c",
 		"remove-dist": "rd /s /q \"dist\""
 	},
 	"nodemonConfig": {
 		"ignore": [
 			"integrations.json",
-			"scripts/**"
+			"scripts/**",
+			"reports/**",
+			"forms/**"
 		]
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
+	"peerDependencies": {
+		"tslib": "^2.5.0"
+	},
 	"dependencies": {
-		"@highmountainlabs/arclight-server": "^0.1.17",
+		"@babel/core": "^7.21.4",
 		"@rollup/plugin-babel": "^6.0.3",
 		"@rollup/plugin-commonjs": "^24.0.1",
 		"@rollup/plugin-json": "^6.0.0",
@@ -39,9 +45,11 @@
 		"cryptr": "^6.1.0",
 		"discord.js": "^14.6.0",
 		"express": "^4.18.2",
+		"https": "^1.0.0",
 		"jsonwebtoken": "^9.0.0",
 		"mongoose": "^6.6.5",
 		"node-fetch": "^2.6.1",
+		"nodemailer": "^6.9.3",
 		"nodemon": "^2.0.20",
 		"rollup-plugin-copy": "^3.4.0",
 		"rollup-plugin-dts": "^5.2.0",
@@ -49,14 +57,18 @@
 		"rollup-plugin-node-polyfills": "^0.2.1",
 		"rollup-plugin-peer-deps-external": "^2.2.4",
 		"rollup-plugin-ts": "^3.2.0",
+		"shx": "^0.3.4",
 		"socket.io": "^4.5.2",
-		"ts-node": "^10.9.1"
+		"ts-node": "^10.9.1",
+		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
+		"@rollup/plugin-image": "^3.0.2",
 		"@types/express": "^4.17.14",
 		"@types/node": "^18.13.0",
 		"@types/node-fetch": "^2.6.2",
 		"rollup": "^3.18.0",
+		"tsup": "^6.7.0",
 		"typescript": "^4.9.5"
 	}
 }

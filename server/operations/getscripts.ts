@@ -8,7 +8,7 @@ module.exports =
 	async (msg: { [key: string]: any }) => {
 		try {
 			if (transforms.restrictions(io, socket, msg)) return;
-			io.to(socket.id).emit(name, modules.Scripts);
+			io.to(socket.id).emit(name, { records: modules.Scripts });
 		} catch (e: any) {
 			io.to(socket.id).emit(`servererror`, {
 				code: 500,

@@ -8,20 +8,36 @@ module.exports =
 	async (msg: any) => {
 		try {
 			if (transforms.restrictions(io, socket, msg)) return;
-			await modules.runScripts("before-create", io, socket)(msg);
+			const beforeCreate = await modules.runScripts(
+				"before-create",
+				io,
+				socket
+			)({ msg, records: null });
+			if (beforeCreate && !beforeCreate.success)
+				throw new Error(`Script Error: ${beforeCreate.error}`);
 			const records = await modules._models[msg._model].insertMany(
 				transforms.reduce(msg)
 			);
+			const after = await modules._models[msg._model].find({
+				_id: { $in: records.map((r: any) => r._id) },
+			});
+			const afterCreate = await modules.runScripts(
+				"after-create",
+				io,
+				socket
+			)({ msg, records: { after } });
+			if (afterCreate && !afterCreate.success)
+				throw new Error(`Script Error: ${afterCreate.error}`);
 			io.to(socket.id).emit(`${name}_${msg._model}`, {
 				[msg._model]: records,
-				_triggerFetch: true,
+				//_triggerFetch: true,
 			});
-			await modules.runScripts("after-create", io, socket)(msg);
-			io.to(socket.id).emit(`serversuccess`, {
+			return io.to(socket.id).emit(`serversuccess`, {
 				code: 201,
 				msg: `Create successful.`,
 			});
 		} catch (msg) {
+			console.log(msg);
 			return io.to(socket.id).emit(`servererror`, {
 				code: 503,
 				msg,

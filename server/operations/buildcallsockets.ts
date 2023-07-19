@@ -1,3 +1,11 @@
+const _exceptionCases = (s: string) => {
+	if (s.includes("datamodels")) return "model";
+	else if (s.includes("form")) return "form";
+	else if (s.includes("formtemplates")) return "form template";
+	else if (s.includes("integrations")) return "integrations";
+	else if (s.includes("scripts")) return "script";
+};
+
 module.exports =
 	(
 		modules: { [key: string]: any },
@@ -13,7 +21,6 @@ module.exports =
 	) => {
 		const v = modules.vanguard(modules, io, socket);
 		Object.keys(calls).map((k) => {
-			let IntegrationSettings: { [key: string]: any };
 			const isAppFn =
 				modules &&
 				modules.Integrations &&
@@ -27,21 +34,41 @@ module.exports =
 						: false
 				);
 			return Array.isArray(calls[k])
-				? calls[k].map((type: string) =>
+				? calls[k].map((type: string) => {
 						socket.on(`${k}_${type}`, (msg: { [key: string]: any }) =>
 							v(
 								token ? token : msg?._token,
-								() =>
+								(userId: any) =>
 									isAppFn
 										? modules.Integrations[isAppFn].invokables
 												.find((Invokable: any) => Invokable.name === k)
 												.fn(msg, io, socket)
-										: operations[k](io, socket)({ ...msg, _model: type }),
+										: operations[k](
+												io,
+												socket
+										  )({ ...msg, _model: type, userId }),
 								type
 							)
-						)
-				  )
-				: socket.on(k, (msg: { [key: string]: any }) =>
+						);
+				  })
+				: socket.on(k, (msg: { [key: string]: any }) => {
+						let Invokable;
+						if (isAppFn) {
+							Invokable = modules.Integrations[isAppFn].invokables.find(
+								(Invokable: any) => Invokable.name === k
+							);
+							if (
+								Invokable &&
+								Invokable.permissions.some((p: string) =>
+									["publicread"].find((el: string) => el === p)
+								)
+							)
+								return modules.Integrations[isAppFn].invokables
+									.find((Invokable: any) => Invokable.name === k)
+									.fn(msg, io, socket);
+						}
+						if (k === "registeruser" || k === "verifyregisteruser")
+							return operations[k](io, socket)(msg);
 						v(
 							token ? token : msg?._token,
 							() =>
@@ -50,9 +77,9 @@ module.exports =
 											.find((Invokable: any) => Invokable.name === k)
 											.fn(msg, io, socket)
 									: operations[k](io, socket)(msg),
-							"model"
-						)
-				  );
+							_exceptionCases(k)
+						);
+				  });
 		});
 		return calls;
 	};

@@ -12,6 +12,22 @@ const c = (b: boolean, k: string, n: number) => {
 	return false;
 };
 
+const codefetch = async (
+	modules: { [key: string]: string },
+	obj: { [key: string]: string }
+) => {
+	if (obj.type === "Discord" && obj.code) {
+		//@ts-ignore
+		const user = await modules.Integrations.Discord.identify(
+			require(`${modules.rootDirectory}/integrations.json`).Discord,
+			obj
+		);
+		if (user) return user;
+		return false;
+	}
+	return false;
+};
+
 module.exports =
 	(
 		modules: { [key: string]: any },
@@ -43,7 +59,14 @@ module.exports =
 			}
 		};
 		const calls: { [key: string]: any } = {};
-		if (!msg._token && msg.username && msg.password) {
+		if (msg.type) {
+			const identity = await codefetch(modules, msg);
+			if (!identity) noauth(`Invalid OATH2 code.`);
+			u = await modules._models.user.findOne({
+				_managedid: identity.id,
+			});
+			if (u) token = savetoken(modules.jwt.sign({ _: u._id }));
+		} else if (!msg._token && msg.username && msg.password) {
 			u = await modules._models.user.findOne({
 				username: msg.username,
 			});
@@ -71,20 +94,29 @@ module.exports =
 							const k = key(s, p.name === "model");
 							if (k) {
 								if (
-									p.publicread ||
-									(u && u.profiles && u.profiles.includes(id.toString()))
+									(u && u.profiles && u.profiles.includes(id.toString())) ||
+									((p.publicread || p.ownerread) && s === "read") ||
+									((p.publiccreate || p.ownercreate) && s === "create") ||
+									((p.publicedit || p.owneredit) && s === "edit") ||
+									((p.publicdelete || p.ownerdelete) && s === "delete")
 								) {
 									if (
 										c(p.name === "logs", k, 1) ||
 										c(p.name === "integrations", k, 2) ||
 										c(p._app, k, 3) ||
-										c(p.name === "script", k, 3)
+										c(p.name === "script", k, 3) ||
+										c(p.name === "form", k, 3) ||
+										c(p.name === "form template", k, 3)
 									) {
-										const n =
+										let n =
 											p.name.slice(-1) === "s"
 												? p.name.slice(0, p.name.length - 1)
 												: p.name;
-										calls[k.replace("records", `${n}s`)] = true;
+										const __key = k.replace("records", `${n}s`);
+										calls[
+											__key.includes("form") ? __key.replace(/ /g, "") : __key
+										] = true;
+										n = n.replace("(M) ", "");
 										if (
 											modules &&
 											modules.Integrations &&
@@ -103,14 +135,42 @@ module.exports =
 										)
 									) {
 										if (!calls[k]) calls[k] = p.name === "model" ? true : [];
-										if (p.name !== "model") return calls[k].push(p.name);
+										if (p.name !== "model") {
+											if (p.recursiveinit) {
+												if (!calls.recursiveinit) calls.recursiveinit = [];
+												if (
+													!calls.recursiveinit.find((s: string) => s === p.name)
+												)
+													calls.recursiveinit.push(p.name);
+											}
+											return calls[k].push(p.name);
+										}
 									}
 								}
 							}
+							if (modules && modules.Integrations)
+								Object.keys(modules.Integrations).map((k: string) => {
+									if (
+										modules &&
+										modules.Integrations &&
+										modules.Integrations[k] &&
+										modules.Integrations[k].invokables
+									)
+										modules.Integrations[k].invokables.map((invokable: any) => {
+											if (calls[invokable.name]) return;
+											if (invokable.permissions.includes(`public${s}`))
+												calls[invokable.name] = true;
+										});
+								});
 					  })
 					: null
 			);
 		});
+		const R = await modules._models.settings.findOne({ name: "default" });
+		if (R && R.userregistration) {
+			calls.registeruser = true;
+			calls.verifyregisteruser = true;
+		}
 		if (msg && msg.redirect && u)
 			io.to(socket.id).emit("redirect", { route: "/" });
 		cb(calls, token);

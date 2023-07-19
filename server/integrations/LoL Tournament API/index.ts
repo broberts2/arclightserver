@@ -37,25 +37,26 @@ module.exports = (modules: { [key: string]: any }, publicURI: string) => {
 				permissions: ["read"],
 				name: "generatetournamentcodes",
 				fn: async (msg: { [key: string]: any }, io: any, socket: any) => {
-					const Settings =
-						require(`${modules.rootDirectory}/integrations.json`)[
-							"LoL Tournament API"
-						];
 					await modules.Integrations[
 						"LoL Tournament API"
-					].generatetournamentcodes(Settings, msg, io, socket);
+					].generatetournamentcodes(
+						require(`${modules.rootDirectory}/integrations.json`)[
+							"LoL Tournament API"
+						],
+						msg,
+						io,
+						socket
+					);
 				},
 			},
 			{
 				permissions: ["read"],
 				name: "authenticatesummoner",
 				fn: async (msg: { [key: string]: any }, io: any, socket: any) => {
-					const Settings =
+					await modules.Integrations["LoL Tournament API"].authenticatesummoner(
 						require(`${modules.rootDirectory}/integrations.json`)[
 							"LoL Tournament API"
-						];
-					await modules.Integrations["LoL Tournament API"].authenticatesummoner(
-						Settings,
+						],
 						msg,
 						io,
 						socket
@@ -66,13 +67,16 @@ module.exports = (modules: { [key: string]: any }, publicURI: string) => {
 				permissions: ["read"],
 				name: "importgamefromtournamentcode",
 				fn: async (msg: { [key: string]: any }, io: any, socket: any) => {
-					const Settings =
-						require(`${modules.rootDirectory}/integrations.json`)[
-							"LoL Tournament API"
-						];
 					await modules.Integrations[
 						"LoL Tournament API"
-					].importgamefromtournamentcode(Settings, msg, io, socket);
+					].importgamefromtournamentcode(
+						require(`${modules.rootDirectory}/integrations.json`)[
+							"LoL Tournament API"
+						],
+						msg,
+						io,
+						socket
+					);
 				},
 			},
 		],

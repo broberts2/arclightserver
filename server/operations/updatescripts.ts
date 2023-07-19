@@ -8,19 +8,21 @@ module.exports =
 	async (msg: { [key: string]: any }) => {
 		try {
 			const name =
-				msg.type !== "Script Logic" ? JSON.parse(msg.value).name : msg.script;
+				msg.type !== "Script Logic"
+					? JSON.parse(msg.value).name.split(".")[0]
+					: msg.script;
 			const b =
 				msg.type !== "Script Logic" &&
-				JSON.parse(msg.value).name !== msg.script;
+				JSON.parse(msg.value).name !== `${msg.script}.js`;
 			if (b)
 				["json", "js"].map((s: string) =>
 					modules.fs.renameSync(
-						`${modules.rootDirectory}/scripts/${msg.script.split(".")[0]}.${s}`,
-						`${modules.rootDirectory}/scripts/${name.split(".")[0]}.${s}`
+						`${modules.rootDirectory}/scripts/${msg.ctx}/${msg.script}.${s}`,
+						`${modules.rootDirectory}/scripts/${msg.ctx}/${name}.${s}`
 					)
 				);
 			modules.fs.writeFileSync(
-				`${modules.rootDirectory}/scripts/${name.split(".")[0]}.${
+				`${modules.rootDirectory}/scripts/${msg.ctx}/${name}.${
 					msg.type === "Script Logic" ? "js" : "json"
 				}`,
 				msg.value,
@@ -35,7 +37,7 @@ module.exports =
 			modules.Scripts[msg.ctx][name][
 				msg.type === "Script Logic" ? "fn" : "metadata"
 			] = msg.value;
-			io.to(socket.id).emit(`getscripts`, modules.Scripts);
+			io.to(socket.id).emit(`getscripts`, { records: modules.Scripts });
 			return io.to(socket.id).emit(`serversuccess`, {
 				code: 202,
 				msg: `Update successful.`,

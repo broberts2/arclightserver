@@ -12,7 +12,9 @@
 		"leaguemodeltype": "lolleague",
 		"playermodeltype": "user",
 		"summonerkey": "summonername",
-		"summonerpuuid": "puuid"
+		"summonerpuuid": "puuid",
+		"defaultseason": 0,
+		"defaultweek": 0
 	},
 	"decorators": {
 		"description": "LoL Tournament API links with an existing RIOT games API key, managing game stats and data compliance.",

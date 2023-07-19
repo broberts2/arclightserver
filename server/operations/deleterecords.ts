@@ -8,20 +8,36 @@ module.exports =
 	async (msg: any) => {
 		try {
 			if (transforms.restrictions(io, socket, msg)) return;
-			await modules.runScripts("before-delete", io, socket)(msg);
-			const records = await modules._models[msg._model][
+			const before = await modules._models[msg._model].find({
+				_id: { $in: [msg._id] },
+			});
+			const beforeDelete = await modules.runScripts(
+				"before-delete",
+				io,
+				socket
+			)({ msg, records: { before } });
+			if (beforeDelete && !beforeDelete.success)
+				throw new Error(`Script Error: ${beforeDelete.error}`);
+			const after = await modules._models[msg._model][
 				msg.search || !msg._id ? "deleteMany" : "deleteOne"
 			](msg.search ? msg.search : { _id: msg._id });
+			const afterDelete = await modules.runScripts(
+				"after-delete",
+				io,
+				socket
+			)({ msg, records: { before, after } });
+			if (afterDelete && !afterDelete.success)
+				throw new Error(`Script Error: ${afterDelete.error}`);
 			io.to(socket.id).emit(`${name}_${msg._model}`, {
-				[msg._model]: records,
-				_triggerFetch: true,
+				[msg._model]: after,
+				//_triggerFetch: true,
 			});
-			await modules.runScripts("after-delete", io, socket)(msg);
-			io.to(socket.id).emit(`serversuccess`, {
+			return io.to(socket.id).emit(`serversuccess`, {
 				code: 203,
 				msg: `Delete successful.`,
 			});
 		} catch (msg) {
+			console.log(msg);
 			return io.to(socket.id).emit(`servererror`, {
 				code: 503,
 				msg,

@@ -66,7 +66,10 @@ module.exports = (modules: any) => async (req: any, res: any) => {
 			const records = r
 				? await modules.recursiveLookup(
 						E.recordtype,
-						query && typeof query === "object" ? query : {}
+						query && typeof query === "object" ? query : {},
+						{
+							skip: 0,
+						}
 				  )
 				: await modules._models[E.recordtype].find(
 						query && typeof query === "object" ? query : {}

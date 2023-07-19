@@ -1,4 +1,5 @@
 const typescript = require("rollup-plugin-ts");
+const image = require("@rollup/plugin-image");
 const folderInput = require("rollup-plugin-folder-input").folderInput;
 const commonjs = require("@rollup/plugin-commonjs");
 const nodeResolve = require("@rollup/plugin-node-resolve");
@@ -17,10 +18,10 @@ fs.readdirSync(`${__dirname}/server/integrations`).map((e) => {
 });
 module.exports = [
 	{
-		input: ["server/**/*.ts"],
+		input: ["server/**/*"],
 		output: [
 			{
-				dir: "dist",
+				dir: "dist/server",
 				format: "cjs",
 				preserveModules: true,
 				sourcemap: false,
@@ -33,24 +34,33 @@ module.exports = [
 			// },
 		],
 		plugins: [
-			json(),
 			folderInput(),
-			nodeResolve(),
+			// nodeResolve(),
 			peerDepsExternal(),
 			commonjs({
 				transformMixedEsModules: true,
 				strictRequires: "auto",
 			}),
+			json(),
 			// nodePolyfills(),
 			typescript(),
 			babel({ babelHelpers: "bundled" }),
+			image(),
 			copy({
-				targets: ["defaultart", "integrationsart"]
-					.map((n) => ({
-						src: `server/${n}`,
-						dest: `dist/server`,
-					}))
-					.concat(IntegrationsJSON),
+				targets: IntegrationsJSON.concat([
+					{
+						src: `package.json`,
+						dest: `dist`,
+					},
+					{
+						src: `integrationsart`,
+						dest: `dist`,
+					},
+					{
+						src: `defaultart`,
+						dest: `dist`,
+					},
+				]),
 			}),
 		],
 	},

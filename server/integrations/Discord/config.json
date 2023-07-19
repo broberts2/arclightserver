@@ -1,8 +1,13 @@
 {
 	"active": false,
 	"settings": {
+		"default_guild": "",
+		"autosync_users": false,
 		"autosync_profiles": false,
-		"endpoints_active": false
+		"desyncusers_on_deactivate": false,
+		"desyncusers_on_leave": false,
+		"endpoints_active": false,
+		"redirect_uri": ""
 	},
 	"decorators": {
 		"description": "Discord servers are organized into topic-based channels where you can collaborate, share, and just talk about your day without clogging up a group chat.",

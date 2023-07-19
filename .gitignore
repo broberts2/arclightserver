@@ -111,3 +111,6 @@ scripts
 
 # Ignore active integrations
 integrations.json
+
+# Ignore generated reports files
+forms
