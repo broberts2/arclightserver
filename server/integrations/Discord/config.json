@@ -1,24 +1,22 @@
 {
-	"active": false,
-	"settings": {
-		"default_guild": "",
-		"autosync_users": false,
-		"autosync_profiles": false,
-		"desyncusers_on_deactivate": false,
-		"desyncusers_on_leave": false,
-		"endpoints_active": false,
-		"redirect_uri": ""
-	},
-	"decorators": {
-		"description": "Discord servers are organized into topic-based channels where you can collaborate, share, and just talk about your day without clogging up a group chat.",
-		"img": "static/integrationsart/discord.jpg"
-	},
-	"apivalues": {
-		"token": "",
-		"client_secret": "",
-		"client_id": "",
-		"public_key": "",
-		"invite_url": ""
-	},
-	"endpoints": {}
+  "active": false,
+  "settings": {
+    "default_guild": "",
+    "autosync_users": false,
+    "autosync_profiles": false,
+    "desyncusers_on_deactivate": false,
+    "desyncusers_on_leave": false,
+    "redirect_uri": ""
+  },
+  "decorators": {
+    "description": "Discord servers are organized into topic-based channels where you can collaborate, share, and just talk about your day without clogging up a group chat.",
+    "img": "static/integrationsart/discord.jpg"
+  },
+  "apivalues": {
+    "token": "",
+    "client_secret": "",
+    "client_id": "",
+    "public_key": "",
+    "invite_url": ""
+  }
 }
