@@ -360,6 +360,7 @@ module.exports = async (
             read: [adminProfileId],
             edit: [adminProfileId],
             delete: [adminProfileId],
+            execute: model.name === "script" ? [adminProfileId] : undefined,
             publicread: model._type === "theme",
             recursiveinit: false,
             img: `${publicURI}/static/defaultart/permissions.jpg`,

@@ -7,8 +7,12 @@ module.exports =
   (io: { [key: string]: any }, socket: { [key: string]: any }) =>
   async (msg: { [key: string]: any }) => {
     try {
-      if (transforms.restrictions(io, socket, msg)) return;
-      io.to(socket.id).emit(name, { records: modules.Scripts });
+      await eval(modules.Scripts[msg.script][msg.selectedscript].fn)();
+      io.to(socket.id).emit(`executescripts`, {});
+      return io.to(socket.id).emit(`serversuccess`, {
+        code: 202,
+        msg: `Execute successful (${msg.script} - ${msg.selectedscript}).`,
+      });
     } catch (e: any) {
       io.to(socket.id).emit(`servererror`, {
         code: 500,
