@@ -7,7 +7,7 @@ module.exports =
   (io: { [key: string]: any }, socket: { [key: string]: any }) =>
   async (msg: { [key: string]: any }) => {
     try {
-      await eval(modules.Scripts[msg.script][msg.selectedscript].fn)();
+      await eval(modules.Scripts[msg.script][msg.selectedscript].fn)(modules);
       io.to(socket.id).emit(`executescripts`, {});
       return io.to(socket.id).emit(`serversuccess`, {
         code: 202,
