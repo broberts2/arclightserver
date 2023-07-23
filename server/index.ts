@@ -155,8 +155,8 @@ const runScripts =
             ? await _(modules, msg)
                 .catch((error: any) => ({ error }))
                 .then((res: any) => {
-                  __.error = res.error;
-                  __.success = !res.error;
+                  __.error = res ? res.error : undefined;
+                  if (res) __.success = !res.error;
                 })
             : null;
         })

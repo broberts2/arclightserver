@@ -18,6 +18,14 @@ module.exports =
           index = "self";
           limit = 1;
         }
+        if (transforms.restrictions(io, socket, msg)) return;
+        const beforeGet = await modules.runScripts(
+          "before-get",
+          io,
+          socket
+        )({ msg, records: null });
+        if (beforeGet && !beforeGet.success)
+          throw new Error(`Script Error: ${beforeGet.error}`);
         if (msg.search) {
           delete msg.search.limit;
           delete msg.search.skip;
@@ -27,12 +35,6 @@ module.exports =
         delete msg.index;
         delete msg._self;
         delete msg.userId;
-        if (transforms.restrictions(io, socket, msg)) return;
-        await modules.runScripts(
-          "before-get",
-          io,
-          socket
-        )({ msg, records: null });
         const totalcount = await modules._models[msg._model].count(msg?.search);
         const records = recursive
           ? await modules.recursiveLookup(msg._model, msg?.search, {
@@ -45,13 +47,19 @@ module.exports =
               .skip(skip)
               .limit(limit)
               .sort(sort);
-        await modules.runScripts("after-get", io, socket)({ msg, records });
+        const afterGet = await modules.runScripts(
+          "after-get",
+          io,
+          socket
+        )({ msg, records });
+        if (afterGet && !afterGet.success)
+          throw new Error(`Script Error: ${afterGet.error}`);
         return io.to(socket.id).emit(`${name}_${msg._model}`, {
           index,
           records,
           totalcount,
         });
-      } catch (msg) {
+      } catch (msg: any) {
         return io.to(socket.id).emit(`servererror`, {
           code: 503,
           msg,
