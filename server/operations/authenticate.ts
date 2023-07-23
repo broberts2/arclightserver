@@ -95,79 +95,85 @@ module.exports =
     permissions.map((p: any) => {
       return ["create", "read", "edit", "delete", "execute"].map((s: string) =>
         p[s]
-          ? p[s].map((id: string) => {
-              const k = key(s, p.name === "model");
-              if (k) {
-                if (
-                  (u && u.profiles && u.profiles.includes(id.toString())) ||
-                  ((p.publicread || p.ownerread) && s === "read") ||
-                  ((p.publiccreate || p.ownercreate) && s === "create") ||
-                  ((p.publicedit || p.owneredit) && s === "edit") ||
-                  ((p.publicdelete || p.ownerdelete) && s === "delete")
-                ) {
+          ? p[s]
+              .filter((s: string) => s)
+              .map((id: string) => {
+                const k = key(s, p.name === "model");
+                if (k) {
                   if (
-                    c(p.name === "logs", k, 1) ||
-                    c(p.name === "integrations", k, 2) ||
-                    c(p._app, k, 3) ||
-                    c(p.name === "script", k, 3) ||
-                    c(p.name === "form", k, 3) ||
-                    c(p.name === "form template", k, 3)
+                    (u && u.profiles && u.profiles.includes(id.toString())) ||
+                    ((p.publicread || p.ownerread) && s === "read") ||
+                    ((p.publiccreate || p.ownercreate) && s === "create") ||
+                    ((p.publicedit || p.owneredit) && s === "edit") ||
+                    ((p.publicdelete || p.ownerdelete) && s === "delete")
                   ) {
-                    let n =
-                      p.name.slice(-1) === "s"
-                        ? p.name.slice(0, p.name.length - 1)
-                        : p.name;
-                    const __key = k.replace("records", `${n}s`);
-                    calls[
-                      __key.includes("form") ? __key.replace(/ /g, "") : __key
-                    ] = true;
-                    n = n.replace("(M) ", "");
                     if (
-                      modules &&
-                      modules.Integrations &&
-                      modules.Integrations[n] &&
-                      modules.Integrations[n].invokables
-                    )
-                      modules.Integrations[n].invokables.map(
-                        (invokable: any) => {
-                          if (invokable.permissions.includes(s))
-                            calls[invokable.name] = true;
+                      c(p.name === "logs", k, 1) ||
+                      c(p.name === "integrations", k, 2) ||
+                      c(p._app, k, 3) ||
+                      c(p.name === "script", k, 3) ||
+                      c(p.name === "form", k, 3) ||
+                      c(p.name === "form template", k, 3)
+                    ) {
+                      let n =
+                        p.name.slice(-1) === "s"
+                          ? p.name.slice(0, p.name.length - 1)
+                          : p.name;
+                      const __key = k.replace("records", `${n}s`);
+                      calls[
+                        __key.includes("form") ? __key.replace(/ /g, "") : __key
+                      ] = true;
+                      n = n.replace("(M) ", "");
+                      if (
+                        modules &&
+                        modules.Integrations &&
+                        modules.Integrations[n] &&
+                        modules.Integrations[n].invokables
+                      )
+                        modules.Integrations[n].invokables.map(
+                          (invokable: any) => {
+                            if (invokable.permissions.includes(s))
+                              calls[invokable.name] = true;
+                          }
+                        );
+                    } else if (
+                      !["integrations", "script"].find(
+                        (el: string) => p.name === el
+                      )
+                    ) {
+                      if (!calls[k]) calls[k] = p.name === "model" ? true : [];
+                      if (p.name !== "model") {
+                        if (p.recursiveinit) {
+                          if (!calls.recursiveinit) calls.recursiveinit = [];
+                          if (
+                            !calls.recursiveinit.find(
+                              (s: string) => s === p.name
+                            )
+                          )
+                            calls.recursiveinit.push(p.name);
                         }
-                      );
-                  } else if (
-                    !["integrations", "script"].find(
-                      (el: string) => p.name === el
-                    )
-                  ) {
-                    if (!calls[k]) calls[k] = p.name === "model" ? true : [];
-                    if (p.name !== "model") {
-                      if (p.recursiveinit) {
-                        if (!calls.recursiveinit) calls.recursiveinit = [];
-                        if (
-                          !calls.recursiveinit.find((s: string) => s === p.name)
-                        )
-                          calls.recursiveinit.push(p.name);
+                        return calls[k].push(p.name);
                       }
-                      return calls[k].push(p.name);
                     }
                   }
                 }
-              }
-              if (modules && modules.Integrations)
-                Object.keys(modules.Integrations).map((k: string) => {
-                  if (
-                    modules &&
-                    modules.Integrations &&
-                    modules.Integrations[k] &&
-                    modules.Integrations[k].invokables
-                  )
-                    modules.Integrations[k].invokables.map((invokable: any) => {
-                      if (calls[invokable.name]) return;
-                      if (invokable.permissions.includes(`public${s}`))
-                        calls[invokable.name] = true;
-                    });
-                });
-            })
+                if (modules && modules.Integrations)
+                  Object.keys(modules.Integrations).map((k: string) => {
+                    if (
+                      modules &&
+                      modules.Integrations &&
+                      modules.Integrations[k] &&
+                      modules.Integrations[k].invokables
+                    )
+                      modules.Integrations[k].invokables.map(
+                        (invokable: any) => {
+                          if (calls[invokable.name]) return;
+                          if (invokable.permissions.includes(`public${s}`))
+                            calls[invokable.name] = true;
+                        }
+                      );
+                  });
+              })
           : null
       );
     });
