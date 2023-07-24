@@ -184,5 +184,8 @@ module.exports =
     }
     if (msg && msg.redirect && u)
       io.to(socket.id).emit("redirect", { route: "/" });
+    Object.keys(calls).map((k: string) => {
+      if (Array.isArray(calls[k])) calls[k] = [...new Set(calls[k])];
+    });
     cb(calls, token);
   };
