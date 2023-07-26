@@ -23,6 +23,7 @@ module.exports = async (
   runScripts: any,
   runRoutes: any,
   recursiveLookup: any,
+  treeLookup: any,
   fetch: any
 ) => {
   if (mongoose.connection.readyState < 1) {
@@ -299,7 +300,7 @@ module.exports = async (
         BaseModelMod
       )
     );
-  const _buildModels = __buildModels(models);
+  const _buildModels = __buildModels(modules, models);
   await _buildModels();
   let adminProfile = await models.profile.findOne({ name: "administrator" });
   if (!adminProfile)
@@ -376,6 +377,7 @@ module.exports = async (
     publicURI
   );
   modules.recursiveLookup = recursiveLookup(modules);
+  modules.treeLookup = treeLookup(modules);
   const r = runRoutes(modules);
   ["get", "post", "put", "delete"].map((s: string) =>
     app[s]("/api/:endpoint", (req: any, res: any) => r(req, res))

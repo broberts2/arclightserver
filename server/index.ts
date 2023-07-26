@@ -45,7 +45,7 @@ const Crt = (C: any) => ({
   decrypt: (s: string) => C.decrypt(s),
 });
 
-const __buildModels = (models: any) => async () => {
+const __buildModels = (modules: any, models: any) => async () => {
   const allDBModels = await models.model.find({});
   allDBModels.map((model: { [key: string]: any }) => {
     const _: {
@@ -56,10 +56,15 @@ const __buildModels = (models: any) => async () => {
       Object.keys(Object.values(model)[2])
         .filter((k) => !k.includes("_"))
         .map((k) => (_[k] = typeof Object.values(model)[2][k]));
-      models[model._type] = mongoose.model(
-        model._type,
-        new Schema(_, { strict: false })
-      );
+      const S = new Schema(_, { strict: false });
+      ["find"].map((s: string) => {
+        S.pre(s, (next: Function) => {
+          //next(new Error("something went wrong"));
+          next();
+        });
+        S.post(s, () => {});
+      });
+      models[model._type] = mongoose.model(model._type, S);
     }
   });
 };
@@ -209,6 +214,66 @@ const recursiveLookup =
     return await runner(type, query);
   };
 
+const treeLookup =
+  (modules: any) =>
+  async (
+    type: string,
+    query: { [key: string]: any },
+    str: string,
+    pagination?: { [key: string]: any }
+  ) => {
+    const M: any = {};
+    const _ = await modules._models.model.find();
+    if (_) _.map((o: any) => (M[o._type] = o));
+    const runner = async (
+      type: string,
+      query: { [key: string]: any },
+      str: string
+    ) => {
+      if (!str) return;
+      let val: any = str.match(/(?<=\{)(.*?)(?=\})/g);
+      if (!val || !val.length) return;
+      val = val[0].split(",").map((s: string) => s.trim());
+      const R = await modules._models[type]
+        .find(query ? query : {})
+        .limit(null)
+        .then(
+          async (r: any) =>
+            await Promise.all(
+              r.map(async (r: any) => {
+                const _: any = {};
+                const subs: Array<string> = [];
+                val.map(async (k: string) => {
+                  if (k.includes(".")) {
+                    const __ = k.split(".").map((kk: string) => kk.trim());
+                    if (!_[__[0]]) {
+                      _[__[0]] = {};
+                      subs.push(__[0]);
+                    }
+                  } else {
+                    _[k] = r[k];
+                  }
+                });
+                if (subs.length)
+                  await Promise.all(
+                    subs.map(
+                      async (sub: string) =>
+                        (_[sub] = await runner(
+                          sub,
+                          { _id: "64b81ada1947f48aeea90920" },
+                          `{name,_id}`
+                        ))
+                    )
+                  );
+                return _;
+              })
+            )
+        );
+      return R;
+    };
+    return await runner(type, query, str);
+  };
+
 module.exports = (cfg: {
   database: string;
   rootDirectory: string;
@@ -259,6 +324,7 @@ module.exports = (cfg: {
     runScripts,
     runRoutes,
     recursiveLookup,
+    treeLookup,
     nodeFetch
   );
 };

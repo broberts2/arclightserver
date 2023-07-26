@@ -63,7 +63,8 @@ module.exports = (modules: any) => async (req: any, res: any) => {
     if (accesstype === "get") {
       let skip, limit, sort;
       const r = query && typeof query === "object" && query._recursive;
-      if (r) delete query._recursive;
+      const t = query && typeof query === "object" && query._tree;
+      if (r) return res.status(403).send("Recursive search forbidden.");
       if (query && typeof query === "object") {
         skip = query.skip;
         limit = query.limit;
@@ -71,11 +72,23 @@ module.exports = (modules: any) => async (req: any, res: any) => {
         delete query.skip;
         delete query.limit;
         delete query.sort;
+        delete query._tree;
       }
       const records = r
         ? await modules.recursiveLookup(
             E.recordtype,
             query && typeof query === "object" ? query : {},
+            {
+              skip,
+              limit,
+              sort,
+            }
+          )
+        : t
+        ? await modules.treeLookup(
+            E.recordtype,
+            query && typeof query === "string" ? query : {},
+            t,
             {
               skip,
               limit,
