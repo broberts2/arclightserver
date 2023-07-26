@@ -243,27 +243,33 @@ const treeLookup =
               r.map(async (r: any) => {
                 const _: any = {};
                 const subs: Array<string> = [];
+                let __: any;
                 val.map(async (k: string) => {
                   if (k.includes(".")) {
-                    const __ = k.split(".").map((kk: string) => kk.trim());
-                    if (!_[__[0]]) {
-                      _[__[0]] = {};
-                      subs.push(__[0]);
+                    __ = k.split(".");
+                    const __key = __.shift().trim();
+                    if (!_[__key]) {
+                      _[__key] = {};
+                      subs.push(__key);
                     }
                   } else {
                     _[k] = r[k];
                   }
                 });
-                if (subs.length)
+                if (subs.length && __)
                   await Promise.all(
-                    subs.map(
-                      async (sub: string) =>
-                        (_[sub] = await runner(
-                          sub,
-                          { _id: "64b81ada1947f48aeea90920" },
-                          `{name,_id}`
-                        ))
-                    )
+                    subs.map(async (sub: string) => {
+                      if (Array.isArray(r[sub]))
+                        return await Promise.all(
+                          r[sub].map(async (_id: string) => {
+                            return (_[sub] = await runner(
+                              M[type][sub].lookup,
+                              { _id },
+                              `{${__.map((kk: string) => kk.trim()).join(",")}}`
+                            ));
+                          })
+                        );
+                    })
                   );
                 return _;
               })
