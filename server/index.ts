@@ -222,29 +222,32 @@ const treeLookup =
     str: string,
     pagination?: { [key: string]: any }
   ) => {
-    const M: any = {};
-    const _ = await modules._models.model.find();
-    if (_) _.map((o: any) => (M[o._type] = o));
-    const runner = async (
-      type: string,
-      query: { [key: string]: any },
-      str: string
-    ) => {
-      if (!str) return;
-      let val: any = str.match(/(?<=\{)(.*?)(?=\})/g);
-      if (!val || !val.length) return;
-      val = val[0].split(",").map((s: string) => s.trim());
-      const R = await modules._models[type]
-        .find(query ? query : {})
-        .limit(null)
-        .then(
-          async (r: any) =>
-            await Promise.all(
+    console.log(`\n\n\n`);
+    try {
+      const M: any = {};
+      const _ = await modules._models.model.find();
+      if (_) _.map((o: any) => (M[o._type] = o));
+      const runner = async (
+        type: string,
+        query: { [key: string]: any },
+        str: string,
+        limit?: number
+      ) => {
+        if (!str) return;
+        let val: any = str.match(/(?<=\{)(.*?)(?=\})/g);
+        if (!val || !val.length) return;
+        val = val[0].split(",").map((s: string) => s.trim());
+        const R = await modules._models[type]
+          .find(query ? query : {})
+          .limit(limit)
+          .then(async (r: any) => {
+            const RESULT = await Promise.all(
               r.map(async (r: any) => {
                 const _: any = {};
                 const subs: Array<string> = [];
                 let __: any;
                 val.map(async (k: string) => {
+                  console.log(k);
                   if (k.includes(".")) {
                     __ = k.split(".");
                     const __key = __.shift().trim();
@@ -252,32 +255,47 @@ const treeLookup =
                       _[__key] = {};
                       subs.push(__key);
                     }
-                  } else {
-                    _[k] = r[k];
                   }
+                  _[k] = r[k];
                 });
-                if (subs.length && __)
+                if (subs.length && __) {
                   await Promise.all(
                     subs.map(async (sub: string) => {
-                      if (Array.isArray(r[sub]))
-                        return await Promise.all(
+                      const tree = `{${__.map((kk: string) => kk.trim()).join(
+                        "."
+                      )}}`;
+                      if (Array.isArray(r[sub])) {
+                        await Promise.all(
                           r[sub].map(async (_id: string) => {
                             return (_[sub] = await runner(
                               M[type][sub].lookup,
                               { _id },
-                              `{${__.map((kk: string) => kk.trim()).join(",")}}`
+                              tree
                             ));
                           })
                         );
+                      } else {
+                        const res = await runner(
+                          M[type][sub].lookup,
+                          { _id: r[sub] },
+                          tree
+                        ).then((r) => r);
+                        _[sub] = res[0];
+                      }
                     })
                   );
+                }
                 return _;
               })
-            )
-        );
-      return R;
-    };
-    return await runner(type, query, str);
+            );
+            return RESULT;
+          });
+        return R;
+      };
+      return await runner(type, query, str, pagination?.limit);
+    } catch (e) {
+      return `${e}`;
+    }
   };
 
 module.exports = (cfg: {

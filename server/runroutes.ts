@@ -66,12 +66,12 @@ module.exports = (modules: any) => async (req: any, res: any) => {
       const t = query && typeof query === "object" && query._tree;
       if (r) return res.status(403).send("Recursive search forbidden.");
       if (query && typeof query === "object") {
-        skip = query.skip;
-        limit = query.limit;
-        sort = query.sort;
-        delete query.skip;
-        delete query.limit;
-        delete query.sort;
+        skip = query._skip;
+        limit = query._limit;
+        sort = query._sort;
+        delete query._skip;
+        delete query._limit;
+        delete query._sort;
         delete query._tree;
       }
       const records = r
