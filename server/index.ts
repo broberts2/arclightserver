@@ -226,7 +226,8 @@ const recursiveLookup =
                       );
                     })
                   );
-                  _[key] = M[type][key]._type === "String" ? v[0] : v.flat();
+                  _[key] =
+                    M[type][key]._type === "String" ? v.flat()[0] : v.flat();
                   Terminators[type] = true;
                 } else {
                   _[key] = record[key];
