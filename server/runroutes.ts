@@ -74,7 +74,7 @@ module.exports = (modules: any) => async (req: any, res: any) => {
         delete query._sort;
         delete query._tree;
       }
-      const records = r
+      const records = t
         ? await modules.recursiveLookup(
             E.recordtype,
             query && typeof query === "object" ? query : {},
@@ -82,18 +82,8 @@ module.exports = (modules: any) => async (req: any, res: any) => {
               skip,
               limit,
               sort,
-            }
-          )
-        : t
-        ? await modules.treeLookup(
-            E.recordtype,
-            query && typeof query === "string" ? query : {},
-            t,
-            {
-              skip,
-              limit,
-              sort,
-            }
+            },
+            t
           )
         : await modules._models[E.recordtype]
             .find(query && typeof query === "object" ? query : {})
@@ -144,7 +134,6 @@ module.exports = (modules: any) => async (req: any, res: any) => {
           .send("Non-empty object query required in request body for DELETE.");
     }
   } catch (e) {
-    console.log(e);
     return res.status(500).send(e);
   }
 };

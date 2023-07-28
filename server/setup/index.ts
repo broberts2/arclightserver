@@ -23,7 +23,6 @@ module.exports = async (
   runScripts: any,
   runRoutes: any,
   recursiveLookup: any,
-  treeLookup: any,
   fetch: any
 ) => {
   if (mongoose.connection.readyState < 1) {
@@ -377,7 +376,6 @@ module.exports = async (
     publicURI
   );
   modules.recursiveLookup = recursiveLookup(modules);
-  modules.treeLookup = treeLookup(modules);
   const r = runRoutes(modules);
   ["get", "post", "put", "delete"].map((s: string) =>
     app[s]("/api/:endpoint", (req: any, res: any) => r(req, res))

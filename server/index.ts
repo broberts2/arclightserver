@@ -174,127 +174,73 @@ const recursiveLookup =
   async (
     type: string,
     query: { [key: string]: any },
-    pagination: { [key: string]: any }
+    pagination: { [key: string]: any },
+    t?: string
   ) => {
-    const Terminators: { [key: string]: boolean } = {};
-    const M: any = {};
-    const _ = await modules._models.model.find();
-    if (_) _.map((o: any) => (M[o._type] = o));
-    const runner = async (type: string, query?: { [key: string]: any }) => {
-      const R = await modules._models[type]
-        .find(query ? query : {})
-        .skip(pagination.skip)
-        .limit(pagination.limit)
-        .sort(pagination.sort);
-      return await Promise.all(
-        R.map(async (record: any) => {
-          const _: { [key: string]: any } = {};
-          await Promise.all(
-            Object.keys(record._doc).map(async (key: string) => {
-              if (
-                !Terminators[type] &&
-                M[type][key] &&
-                typeof M[type][key] === "object" &&
-                M[type][key].lookup
-              ) {
-                const v = await runner(M[type][key].lookup, {
-                  _id: { $in: [].concat(record[key]) },
-                });
-                _[key] = M[type][key]._type === "String" ? v[0] : v;
-                Terminators[type] = true;
-              } else {
-                _[key] = record[key];
-              }
-            })
-          );
-          return _;
-        })
-      );
-    };
-    return await runner(type, query);
-  };
-
-const treeLookup =
-  (modules: any) =>
-  async (
-    type: string,
-    query: { [key: string]: any },
-    str: string,
-    pagination?: { [key: string]: any }
-  ) => {
-    console.log(`\n\n\n`);
     try {
+      const Terminators: { [key: string]: boolean } = {};
       const M: any = {};
       const _ = await modules._models.model.find();
-      if (_) _.map((o: any) => (M[o._type] = o));
+      if (!_) return;
+      _.map((o: any) => (M[o._type] = o));
       const runner = async (
         type: string,
-        query: { [key: string]: any },
-        str: string,
-        limit?: number
+        query?: { [key: string]: any },
+        t?: string
       ) => {
-        if (!str) return;
-        let val: any = str.match(/(?<=\{)(.*?)(?=\})/g);
-        if (!val || !val.length) return;
-        val = val[0].split(",").map((s: string) => s.trim());
+        const T: any = {};
+        const SUBT: Array<string> = [];
+        if (t) {
+          const val = t.match(/(?<=\{)(.*?)(?=\})/);
+          if (val && val[0])
+            val[0].split(",").map((s: string) => {
+              const __ = s.split(".");
+              T[__[0].trim()] = 1;
+              if (__.length > 1) SUBT.push(__.slice(1).join("."));
+            });
+        }
         const R = await modules._models[type]
-          .find(query ? query : {})
-          .limit(limit)
-          .then(async (r: any) => {
-            const RESULT = await Promise.all(
-              r.map(async (r: any) => {
-                const _: any = {};
-                const subs: Array<string> = [];
-                let __: any;
-                val.map(async (k: string) => {
-                  console.log(k);
-                  if (k.includes(".")) {
-                    __ = k.split(".");
-                    const __key = __.shift().trim();
-                    if (!_[__key]) {
-                      _[__key] = {};
-                      subs.push(__key);
-                    }
-                  }
-                  _[k] = r[k];
-                });
-                if (subs.length && __) {
-                  await Promise.all(
-                    subs.map(async (sub: string) => {
-                      const tree = `{${__.map((kk: string) => kk.trim()).join(
-                        "."
-                      )}}`;
-                      if (Array.isArray(r[sub])) {
-                        await Promise.all(
-                          r[sub].map(async (_id: string) => {
-                            return (_[sub] = await runner(
-                              M[type][sub].lookup,
-                              { _id },
-                              tree
-                            ));
-                          })
-                        );
-                      } else {
-                        const res = await runner(
-                          M[type][sub].lookup,
-                          { _id: r[sub] },
-                          tree
-                        ).then((r) => r);
-                        _[sub] = res[0];
-                      }
+          .find(query ? query : {}, T)
+          .skip(pagination.skip)
+          .limit(pagination.limit)
+          .sort(pagination.sort);
+        return await Promise.all(
+          R.map(async (record: any) => {
+            const _: { [key: string]: any } = {};
+            await Promise.all(
+              Object.keys(record._doc).map(async (key: string) => {
+                if (
+                  !Terminators[type] &&
+                  M[type][key] &&
+                  typeof M[type][key] === "object" &&
+                  M[type][key].lookup
+                ) {
+                  const v = await Promise.all(
+                    [].concat(record[key]).map(async (_id: string) => {
+                      return await runner(
+                        M[type][key].lookup,
+                        {
+                          _id,
+                        },
+                        t ? `{${SUBT.join(",")}}` : undefined
+                      );
                     })
                   );
+                  _[key] = M[type][key]._type === "String" ? v[0] : v.flat();
+                  Terminators[type] = true;
+                } else {
+                  _[key] = record[key];
                 }
-                return _;
               })
             );
-            return RESULT;
-          });
-        return R;
+            return _;
+          })
+        );
       };
-      return await runner(type, query, str, pagination?.limit);
-    } catch (e) {
-      return `${e}`;
+      return await runner(type, query, t);
+    } catch (e: any) {
+      if (e.code === 40352)
+        throw new Error(`Tree cannot be empty when '_tree' flag is used.`);
     }
   };
 
@@ -348,7 +294,6 @@ module.exports = (cfg: {
     runScripts,
     runRoutes,
     recursiveLookup,
-    treeLookup,
     nodeFetch
   );
 };
