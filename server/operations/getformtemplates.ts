@@ -21,7 +21,17 @@ module.exports =
       modules.fs
         .readdirSync(`${modules.rootDirectory}/forms/templates`)
         .filter((e: string) =>
-          msg.search ? msg.search.name === e.split(".")[0] : true
+          msg.search && Object.keys(msg.search).length
+            ? typeof msg.search.name === "string"
+              ? e
+                  .split(".")[0]
+                  .toLocaleLowerCase()
+                  .includes(msg.search.name.toLocaleLowerCase())
+              : e
+                  .split(".")[0]
+                  .toLocaleLowerCase()
+                  .includes(msg.search.name["$regex"].toLocaleLowerCase())
+            : true
         )
         .map((e: string) => {
           totalcount++;
