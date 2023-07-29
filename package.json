@@ -1,6 +1,6 @@
 {
   "name": "@highmountainlabs/arclight-server",
-  "version": "0.3.33",
+  "version": "0.3.34",
   "main": "server/index.js",
   "module": "server/index.mjs",
   "types": "server/index.d.ts",
@@ -10,7 +10,7 @@
     "link-test": "npm-link && npm start",
     "link": "npm unlink @highmountainlabs/arclight-server && npm run build && cd dist && npm link && cd .. && npm link @highmountainlabs/arclight-server",
     "publish-test": "npm run build && cd dist && npm publish --dry-run && cd ..",
-    "publish": "npm run build && cd dist && npm publish && cd ..",
+    "publish": "git add . && git commit -m \"pre-publish commit\" && git push && npm run build && cd dist && npm publish && cd ..",
     "start": "nodemon runserver.ts",
     "build": "npm run remove-dist & rollup -c",
     "remove-dist": "rd /s /q \"dist\""
