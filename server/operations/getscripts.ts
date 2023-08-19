@@ -7,8 +7,12 @@ module.exports =
   (io: { [key: string]: any }, socket: { [key: string]: any }) =>
   async (msg: { [key: string]: any }) => {
     try {
+      let totalcount = 0;
       if (transforms.restrictions(io, socket, msg)) return;
-      io.to(socket.id).emit(name, { records: modules.Scripts });
+      Object.keys(modules.Scripts).map((k: string) =>
+        Object.keys(modules.Scripts[k]).map(() => totalcount++)
+      );
+      io.to(socket.id).emit(name, { records: modules.Scripts, totalcount });
     } catch (e: any) {
       io.to(socket.id).emit(`servererror`, {
         code: 500,
