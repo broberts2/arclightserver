@@ -82,6 +82,7 @@ module.exports = (modules: any) => async (req: any, res: any) => {
       return res.status(401).send("Invalid underscore selector in query.");
     if (accesstype === "get") {
       const _res = await eval(modules.Scripts.endpoint[E.script].fn)(modules, {
+        Req: req,
         query,
         skip,
         limit,
@@ -92,6 +93,7 @@ module.exports = (modules: any) => async (req: any, res: any) => {
       return res.json(_res);
     } else if (accesstype === "post") {
       const _res = await eval(modules.Scripts.endpoint[E.script].fn)(modules, {
+        Req: req,
         query,
         skip,
         limit,
@@ -102,6 +104,7 @@ module.exports = (modules: any) => async (req: any, res: any) => {
       return res.json(_res);
     } else if (accesstype === "put") {
       const _res = await eval(modules.Scripts.endpoint[E.script].fn)(modules, {
+        Req: req,
         query,
         skip,
         limit,
@@ -112,6 +115,7 @@ module.exports = (modules: any) => async (req: any, res: any) => {
       return res.json(_res);
     } else if (accesstype === "delete") {
       const _res = await eval(modules.Scripts.endpoint[E.script].fn)(modules, {
+        Req: req,
         query,
         skip,
         limit,
