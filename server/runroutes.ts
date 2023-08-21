@@ -91,67 +91,35 @@ module.exports = (modules: any) => async (req: any, res: any) => {
       });
       return res.json(_res);
     } else if (accesstype === "post") {
-      if (req.body.query && Object.keys(req.body.query)) {
-        if (!req.body.records)
-          return res
-            .status(402)
-            .send("Missing 'records' key in request body for POST.");
-        const _res = await eval(modules.Scripts.endpoint[E.script].fn)(
-          modules,
-          {
-            query,
-            skip,
-            limit,
-            sort,
-            recursive,
-            tree,
-          }
-        );
-        return res.json(_res);
-      } else
-        return res
-          .status(402)
-          .send("Non-empty object query required in request body for POST.");
+      const _res = await eval(modules.Scripts.endpoint[E.script].fn)(modules, {
+        query,
+        skip,
+        limit,
+        sort,
+        recursive,
+        tree,
+      });
+      return res.json(_res);
     } else if (accesstype === "put") {
-      if (req.body.query && Object.keys(req.body.query)) {
-        if (!req.body.records)
-          return res
-            .status(402)
-            .send("Missing 'records' key in request body for PUT.");
-        const _res = await eval(modules.Scripts.endpoint[E.script].fn)(
-          modules,
-          {
-            query,
-            skip,
-            limit,
-            sort,
-            recursive,
-            tree,
-          }
-        );
-        return res.json(_res);
-      } else
-        return res
-          .status(402)
-          .send("Non-empty object query required in request body for PUT.");
+      const _res = await eval(modules.Scripts.endpoint[E.script].fn)(modules, {
+        query,
+        skip,
+        limit,
+        sort,
+        recursive,
+        tree,
+      });
+      return res.json(_res);
     } else if (accesstype === "delete") {
-      if (req.body.query && Object.keys(req.body.query)) {
-        const _res = await eval(modules.Scripts.endpoint[E.script].fn)(
-          modules,
-          {
-            query,
-            skip,
-            limit,
-            sort,
-            recursive,
-            tree,
-          }
-        );
-        return res.json(_res);
-      } else
-        return res
-          .status(402)
-          .send("Non-empty object query required in request body for DELETE.");
+      const _res = await eval(modules.Scripts.endpoint[E.script].fn)(modules, {
+        query,
+        skip,
+        limit,
+        sort,
+        recursive,
+        tree,
+      });
+      return res.json(_res);
     }
   } catch (e) {
     console.log(e);
