@@ -7,6 +7,9 @@ module.exports = (modules: any) => async (req: any, res: any) => {
     });
     if (!E) return res.status(404).send("Endpoint not found.");
     if (!req || !req.body) return res.status(401).send("Missing request body.");
+    if (!E.script) return res.status(500).send("No script bound to endpoint.");
+    if (!modules.Scripts.endpoint[E.script])
+      return res.status(500).send("No script found for this endpoint.");
     const metaData =
       typeof req.body.metaData === "string"
         ? JSON.parse(req.body.metaData)
@@ -45,10 +48,7 @@ module.exports = (modules: any) => async (req: any, res: any) => {
       )
         return res.status(403).send("Forbidden.");
     }
-    const preProcess = Object.keys(modules.Integrations).find(
-      (k: string) => modules.Integrations[k][E.accessurl]
-    );
-    let query;
+    let query: any;
     if (req.query.query && typeof req.query.query === "string") {
       try {
         query = JSON.parse(req.query.query);
@@ -60,49 +60,52 @@ module.exports = (modules: any) => async (req: any, res: any) => {
         query = req.body.query;
       } catch (e) {}
     }
+    let skip: any, limit: any, sort: any;
+    const recursive = query && typeof query === "object" && query._recursive;
+    const tree =
+      query && typeof query === "object" && query._tree
+        ? query._tree
+        : undefined;
+    if (recursive) return res.status(403).send("Recursive search forbidden.");
+    if (query && typeof query === "object") {
+      skip = query._skip;
+      limit = query._limit;
+      sort = query._sort;
+      delete query._skip;
+      delete query._limit;
+      delete query._sort;
+      delete query._tree;
+    }
+    if (query && Object.keys(query).some((s: string) => s.charAt(0) === "_"))
+      return res.status(401).send("Invalid underscore selector in query.");
     if (accesstype === "get") {
-      let skip, limit, sort;
-      const r = query && typeof query === "object" && query._recursive;
-      const t = query && typeof query === "object" && query._tree;
-      if (r) return res.status(403).send("Recursive search forbidden.");
-      if (query && typeof query === "object") {
-        skip = query._skip;
-        limit = query._limit;
-        sort = query._sort;
-        delete query._skip;
-        delete query._limit;
-        delete query._sort;
-        delete query._tree;
-      }
-      const records = t
-        ? await modules.recursiveLookup(
-            E.recordtype,
-            query && typeof query === "object" ? query : {},
-            {
-              skip,
-              limit,
-              sort,
-            },
-            t
-          )
-        : await modules._models[E.recordtype]
-            .find(query && typeof query === "object" ? query : {})
-            .skip(skip)
-            .limit(limit)
-            .sort(sort);
-      return res.json(records);
+      const _res = await eval(modules.Scripts.endpoint[E.script].fn)(modules, {
+        query,
+        skip,
+        limit,
+        sort,
+        recursive,
+        tree,
+      });
+      return res.json(_res);
     } else if (accesstype === "post") {
       if ((req.body.query && Object.keys(req.body.query)) || E.nonstrict) {
         if (!req.body.records && !E.nonstrict)
           return res
             .status(402)
             .send("Missing 'records' key in request body for POST.");
-        const _ = E.nonstrict ? req.body : req.body.records;
-        const records = preProcess
-          ? await modules.Integrations[preProcess][E.accessurl](_)
-          : _;
-        const results = await modules._models[E.recordtype].insertMany(records);
-        return res.json(results);
+        const _res = await eval(modules.Scripts.endpoint[E.script].fn)(
+          modules,
+          {
+            query,
+            skip,
+            limit,
+            sort,
+            recursive,
+            tree,
+          }
+        );
+        return res.json(_res);
       } else
         return res
           .status(402)
@@ -113,27 +116,43 @@ module.exports = (modules: any) => async (req: any, res: any) => {
           return res
             .status(402)
             .send("Missing 'records' key in request body for PUT.");
-        const records = await modules._models[E.recordtype].updateMany(
-          E.nonstrict ? {} : req.body.query,
-          E.nonstrict ? req.body : req.body.records
+        const _res = await eval(modules.Scripts.endpoint[E.script].fn)(
+          modules,
+          {
+            query,
+            skip,
+            limit,
+            sort,
+            recursive,
+            tree,
+          }
         );
-        return res.json(records);
+        return res.json(_res);
       } else
         return res
           .status(402)
           .send("Non-empty object query required in request body for PUT.");
     } else if (accesstype === "delete") {
       if ((req.body.query && Object.keys(req.body.query)) || E.nonstrict) {
-        const records = await modules._models[E.recordtype].deleteMany(
-          E.nonstrict ? {} : req.body.query
+        const _res = await eval(modules.Scripts.endpoint[E.script].fn)(
+          modules,
+          {
+            query,
+            skip,
+            limit,
+            sort,
+            recursive,
+            tree,
+          }
         );
-        return res.json(records);
+        return res.json(_res);
       } else
         return res
           .status(402)
           .send("Non-empty object query required in request body for DELETE.");
     }
   } catch (e) {
+    console.log(e);
     return res.status(500).send(e);
   }
 };

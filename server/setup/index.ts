@@ -254,24 +254,14 @@ module.exports = async (
             unique: false,
             required: false,
           },
-          recordtype: {
-            _type: "String",
-            type: String,
-            unique: true,
-            required: true,
-          },
+          script: "",
           accessurl: {
             _type: "String",
             type: String,
             unique: true,
             required: true,
           },
-          accesstype: {
-            _type: "String",
-            type: String,
-            unique: false,
-            required: true,
-          },
+          accesstype: "",
           profileaccess: {
             lookup: "profile",
             _type: "Array",

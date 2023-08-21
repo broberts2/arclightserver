@@ -240,6 +240,7 @@ const recursiveLookup =
       };
       return await runner(type, query, t);
     } catch (e: any) {
+      console.log(e);
       if (e.code === 40352)
         throw new Error(`Tree cannot be empty when '_tree' flag is used.`);
     }
