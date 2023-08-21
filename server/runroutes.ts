@@ -26,27 +26,29 @@ module.exports = (modules: any) => async (req: any, res: any) => {
           ? JSON.stringify(metaData)
           : metaData;
     }
-    if (!apitoken || (apitoken && E.apikeyaccess !== apitoken)) {
-      if (!req.body.username || !req.body.password)
-        return res
-          .status(403)
-          .send(
-            "Missing/invalid username, password, or API Token in request query/body."
-          );
-      const U = await modules._models.user.findOne({
-        username: req.body.username,
-      });
-      if (!U) return res.status(401).send("User not found.");
-      if (modules.Cryptr.decrypt(U._password) !== req.body.password)
-        return res
-          .status(403)
-          .send("Invalid username or password in request body.");
-      if (
-        !U.profiles.some((s: string) =>
-          E.profileaccess.find((ss: string) => ss === s.toString())
+    if (!E.nonstrict) {
+      if (!apitoken || (apitoken && E.apikeyaccess !== apitoken)) {
+        if (!req.body.username || !req.body.password)
+          return res
+            .status(403)
+            .send(
+              "Missing/invalid username, password, or API Token in request query/body."
+            );
+        const U = await modules._models.user.findOne({
+          username: req.body.username,
+        });
+        if (!U) return res.status(401).send("User not found.");
+        if (modules.Cryptr.decrypt(U._password) !== req.body.password)
+          return res
+            .status(403)
+            .send("Invalid username or password in request body.");
+        if (
+          !U.profiles.some((s: string) =>
+            E.profileaccess.find((ss: string) => ss === s.toString())
+          )
         )
-      )
-        return res.status(403).send("Forbidden.");
+          return res.status(403).send("Forbidden.");
+      }
     }
     let query: any;
     if (req.query.query && typeof req.query.query === "string") {
@@ -89,8 +91,8 @@ module.exports = (modules: any) => async (req: any, res: any) => {
       });
       return res.json(_res);
     } else if (accesstype === "post") {
-      if ((req.body.query && Object.keys(req.body.query)) || E.nonstrict) {
-        if (!req.body.records && !E.nonstrict)
+      if (req.body.query && Object.keys(req.body.query)) {
+        if (!req.body.records)
           return res
             .status(402)
             .send("Missing 'records' key in request body for POST.");
@@ -111,7 +113,7 @@ module.exports = (modules: any) => async (req: any, res: any) => {
           .status(402)
           .send("Non-empty object query required in request body for POST.");
     } else if (accesstype === "put") {
-      if ((req.body.query && Object.keys(req.body.query)) || E.nonstrict) {
+      if (req.body.query && Object.keys(req.body.query)) {
         if (!req.body.records)
           return res
             .status(402)
@@ -133,7 +135,7 @@ module.exports = (modules: any) => async (req: any, res: any) => {
           .status(402)
           .send("Non-empty object query required in request body for PUT.");
     } else if (accesstype === "delete") {
-      if ((req.body.query && Object.keys(req.body.query)) || E.nonstrict) {
+      if (req.body.query && Object.keys(req.body.query)) {
         const _res = await eval(modules.Scripts.endpoint[E.script].fn)(
           modules,
           {
