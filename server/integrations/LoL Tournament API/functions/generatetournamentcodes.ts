@@ -1,9 +1,10 @@
 module.exports =
   (Modules: any, publicURI: string) =>
   async (Settings: any, msg: { [key: string]: any }, io: any, socket: any) => {
+    console.log(msg);
     let eFlag: { msg: string; code: number } | boolean = false;
     const pms = [];
-    const c: any = async () =>
+    const c: any = async (gameNum: number) =>
       await Modules.fetch(
         `https://americas.api.riotgames.com/lol/tournament/v4/codes?tournamentId=${Settings.apivalues.tournamentid}&api_key=${Settings.apivalues.tournamentapikey}`,
         {
@@ -15,12 +16,12 @@ module.exports =
             //@ts-ignore
             mapType: "SUMMONERS_RIFT",
             metadata: JSON.stringify({
-              team1: msg.team1._id,
-              team2: msg.team2._id,
+              team1: msg.team1,
+              team2: msg.team2,
               weekNum: msg.weekNum,
-              gameNum: msg.gameNum,
+              gameNum,
               seasonNum: msg.seasonNum,
-              league: msg.league._id,
+              league: msg.league,
             }),
             pickType: "TOURNAMENT_DRAFT",
             spectatorType: "ALL",
@@ -32,7 +33,7 @@ module.exports =
     for (let i = 0; i < msg.count; i++)
       pms.push(async () => {
         if (eFlag) return;
-        const cc = await c();
+        const cc = await c(i + 1);
         if (cc.status && cc.status.status_code >= 300)
           eFlag = {
             code: cc.status.status_code,
