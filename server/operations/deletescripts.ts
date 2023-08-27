@@ -24,7 +24,7 @@ module.exports =
       console.log(e);
       io.to(socket.id).emit(`servererror`, {
         code: 500,
-        msg: `Delete un-successful.`,
+        msg: `Delete un-successful.\n\n${e}`,
       });
       return;
     }
