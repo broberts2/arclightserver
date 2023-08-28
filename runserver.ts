@@ -1,8 +1,6 @@
 const server = require("./server/index");
 //const server = require("@highmountainlabs/arclight-server");
 
-const root = "/etc/letsencrypt/live/<my_domain>";
-
 server({
   rootDirectory: __dirname,
   database: "arclight",

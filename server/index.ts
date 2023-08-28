@@ -267,7 +267,17 @@ module.exports = (cfg: {
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb" }));
   let server;
-  if (cfg.cert) server = require("https").createServer(cfg.cert, app);
+  if (cfg.cert)
+    server = require("https").createServer(
+      (() => {
+        const _cfg: any = {};
+        Object.keys(cfg.cert).map((k: string) => {
+          if (cfg.cert) _cfg[k] = fs.readFileSync(cfg.cert[k], "utf8");
+        });
+        return _cfg;
+      })(),
+      app
+    );
   else server = require("http").createServer(app);
   setup(
     cfg.rootDirectory,
