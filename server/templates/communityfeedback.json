@@ -1,0 +1,24 @@
+{
+  "title": "Community Feedback",
+  "backgroundimage": "http://titanesports.org:7000/static/media/lor_ekko.png",
+  "description": "",
+  "controls": [
+    {
+      "type": "text",
+      "value": "We here at TES do our best to provide our community with exicting, fair, and engaging content. However, we don't always hit our mark. If you have something you'd like to say, please submit a comment below. Our staff will be happy to read what you have to say! (Note: All submissions are fully anonymous)"
+    },
+    {
+      "type": "divide"
+    },
+    {
+      "type": "text",
+      "value": "Submit your response here."
+    },
+    {
+      "type": "textarea",
+      "description": "",
+      "defaultvalue": "",
+      "required": true
+    }
+  ]
+}
