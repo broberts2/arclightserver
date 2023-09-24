@@ -114,3 +114,6 @@ integrations.json
 
 # Ignore generated reports files
 forms
+
+# Ignore .sfdx
+.sfdx/
