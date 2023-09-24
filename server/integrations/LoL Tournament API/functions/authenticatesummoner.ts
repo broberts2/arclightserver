@@ -32,7 +32,7 @@ module.exports =
       });
     const S = await Modules._models["(M) summoner"]
       .insertMany({
-        img: `${Modules.globals.publicURI}/static/defaultart/summoner.jpg`,
+        img: `http://highmountainlabs.io/arclight/cdn/media/summoner.jpg`,
         name: `(M) ${summoner.name}`,
         puuid: summoner.puuid,
         profileIconId: summoner.profileIconId,

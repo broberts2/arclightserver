@@ -10,10 +10,10 @@ module.exports =
           _managed: "LoL Tournament API",
           _type: "(M) summoner",
           text: "(M) Summoner",
-          metaimg: `${publicURI}/static/media/riotxlol.jpg`,
+          metaimg: `http://highmountainlabs.io/arclight/cdn/media/5.jpg`,
           category: "",
           icon: "",
-          subicon: "",
+          subicon: "hat-wizard",
           name: {
             _type: "String",
             lookup: null,

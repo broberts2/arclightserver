@@ -1,4 +1,9 @@
-module.exports = async (models: any, BaseModelMod: any, publicURI: string) => {
+module.exports = async (
+  models: any,
+  BaseModelMod: any,
+  publicURI: string,
+  HMLCDN: string
+) => {
   const permissions = await models.model.findOne({
     _type: "permissions",
   });
@@ -54,7 +59,7 @@ module.exports = async (models: any, BaseModelMod: any, publicURI: string) => {
           text: "Permissions",
           icon: "shield",
           subicon: "user-shield",
-          metaimg: `${publicURI}/static/defaultart/permissions.jpg`,
+          metaimg: `http://highmountainlabs.io/arclight/cdn/media/5.jpg`,
           category: "",
         },
         BaseModelMod

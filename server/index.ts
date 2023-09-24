@@ -13,6 +13,8 @@ const runRoutes = require("./runroutes");
 const jwt = require("jsonwebtoken");
 const Cryptr = require("cryptr");
 
+const HMLCDN = `http://highmountainlabs.io/arclight/cdn/media`;
+
 const Schema = mongoose.Schema;
 
 const BaseModelMod: { [key: string]: any } = {};
@@ -280,6 +282,7 @@ module.exports = (cfg: {
     );
   else server = require("http").createServer(app);
   setup(
+    HMLCDN,
     cfg.rootDirectory,
     cfg.port,
     cfg.publicURI,

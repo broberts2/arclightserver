@@ -16,8 +16,8 @@ module.exports =
           i
             ? JSON.stringify(value)
             : `async (ServerObject, ${
-                value.context === "endpoint" ? "Req" : "Ctx"
-              }) => {\n\n};`,
+                value.context === "custom-call" ? "io, socket, " : ""
+              }${value.context === "endpoint" ? "Req" : "Ctx"}) => {\n\n};`,
           {
             encoding: "utf8",
           }
@@ -28,9 +28,16 @@ module.exports =
       modules.Scripts[msg.ctx][value.name.split(".")[0]] = {
         metadata: JSON.stringify(value),
         fn: `async (ServerObject, ${
-          value.context === "endpoint" ? "Req" : "Ctx"
-        }) => {
-
+          value.context === "custom-call" ? "io, socket, " : ""
+        }${value.context === "endpoint" ? "Req" : "Ctx"}) => {
+          ${
+            true
+              ? `return io.to(socket.id).emit(\`${`serversuccess`}\`, {
+            code: 202,
+            msg: \`${`Execute successful (<messge>).`}\`,
+          });`
+              : ""
+          }
 				};
 				`,
       };

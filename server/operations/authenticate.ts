@@ -62,6 +62,7 @@ module.exports =
       }
     };
     const calls: { [key: string]: any } = {};
+    const customcalls: { [key: string]: any } = {};
     if (msg.type) {
       const identity = await codefetch(modules, msg);
       if (!identity) noauth(`Invalid OATH2 code.`);
@@ -182,10 +183,17 @@ module.exports =
       calls.registeruser = true;
       calls.verifyregisteruser = true;
     }
+    if (true) {
+      customcalls["test_script"] = true;
+    }
     if (msg && msg.redirect && u)
       io.to(socket.id).emit("redirect", { route: "/" });
     Object.keys(calls).map((k: string) => {
       if (Array.isArray(calls[k])) calls[k] = [...new Set(calls[k])];
     });
-    cb(calls, token);
+    Object.keys(customcalls).map((k: string) => {
+      if (Array.isArray(customcalls[k]))
+        customcalls[k] = [...new Set(customcalls[k])];
+    });
+    cb(calls, customcalls, token);
   };

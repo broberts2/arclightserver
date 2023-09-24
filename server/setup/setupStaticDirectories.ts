@@ -16,6 +16,8 @@ module.exports = (rootDirectory: string, fs: any) => {
         : null
     )
   );
+  if (!fs.existsSync(`${rootDirectory}/scripts/custom-call`))
+    fs.mkdirSync(`${rootDirectory}/scripts/custom-call`);
   if (!fs.existsSync(`${rootDirectory}/scripts/endpoint`))
     fs.mkdirSync(`${rootDirectory}/scripts/endpoint`);
   if (!fs.existsSync(`${rootDirectory}/scripts/universal`))

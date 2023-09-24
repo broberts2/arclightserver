@@ -2,6 +2,7 @@ const setupStaticDirectories = require("./setupStaticDirectories");
 const setupPermissionsModel = require("./setupPermissionsModel");
 
 module.exports = async (
+  HMLCDN: string,
   rootDirectory: string,
   port: number,
   publicURI: string,
@@ -43,7 +44,7 @@ module.exports = async (
     [key: string]: { [key: string]: any };
   } = {};
   models["model"] = mongoose.model("model", new Schema({}, { strict: false }));
-  await setupPermissionsModel(models, BaseModelMod, publicURI);
+  await setupPermissionsModel(models, BaseModelMod, publicURI, HMLCDN);
   const profile = await models.model.findOne({
     _type: "profile",
   });
@@ -76,7 +77,7 @@ module.exports = async (
           text: "Profiles",
           icon: "id-badge",
           subicon: "id-card",
-          metaimg: `${publicURI}/static/defaultart/profile.jpg`,
+          metaimg: `http://highmountainlabs.io/arclight/cdn/media/5.jpg`,
           category: "",
         },
         BaseModelMod
@@ -119,7 +120,7 @@ module.exports = async (
           text: "Users",
           icon: "users",
           subicon: "user-gear",
-          metaimg: `${publicURI}/static/defaultart/user.jpg`,
+          metaimg: `http://highmountainlabs.io/arclight/cdn/media/5.jpg`,
           category: "",
         },
         BaseModelMod
@@ -153,7 +154,7 @@ module.exports = async (
           text: "Settings",
           icon: "gears",
           subicon: "gear",
-          metaimg: `${publicURI}/static/defaultart/settings.jpg`,
+          metaimg: `http://highmountainlabs.io/arclight/cdn/media/5.jpg`,
           category: "",
         },
         BaseModelMod
@@ -229,7 +230,7 @@ module.exports = async (
           text: "Themes",
           icon: "paintbrush",
           subicon: "paintbrush",
-          metaimg: `${publicURI}/static/defaultart/theme.jpg`,
+          metaimg: `http://highmountainlabs.io/arclight/cdn/media/5.jpg`,
           category: "",
         },
         BaseModelMod
@@ -283,7 +284,8 @@ module.exports = async (
           },
           text: "Endpoints",
           icon: "circle-nodes",
-          metaimg: `${publicURI}/static/defaultart/endpoint.jpg`,
+          subicon: "circle-nodes",
+          metaimg: `http://highmountainlabs.io/arclight/cdn/media/5.jpg`,
           category: "",
         },
         BaseModelMod
@@ -296,14 +298,30 @@ module.exports = async (
     adminProfile = await models.profile.create({
       name: "administrator",
       hierarchy: 0,
-      img: `${publicURI}/static/defaultart/profile.jpg`,
+      img: `${HMLCDN}/profile.jpg`,
     });
   const serverSettings = await models.settings.findOne({});
   if (!serverSettings)
     models.settings.create({
       name: "default",
-      img: `${publicURI}/static/defaultart/settings.jpg`,
+      img: `${HMLCDN}/settings.jpg`,
       userregistration: true,
+    });
+  const themes = await models.theme.findOne({});
+  if (!themes)
+    models.theme.create({
+      _system: true,
+      name: "default",
+      img: `${HMLCDN}/1.jpg`,
+      fontfamily: "Russo One",
+      primarytextcolor: "rgb(255,255,255)",
+      secondarytextcolor: "rgb(141, 0, 222)",
+      backgroundprimarycolor: "rgb(40,44,52)",
+      backgroundsecondarycolor: "rgb(32,32,32)",
+      backgroundtertiarycolor: "rgb(255, 222, 145)",
+      backgroundquarternarycolor: "rgb(203,213,225)",
+      backgroundquinarycolor: "",
+      text: "Themes",
     });
   const adminUser = await models.user.findOne({
     username: "administrator",
@@ -314,7 +332,7 @@ module.exports = async (
       username: "administrator",
       _password: Cryptr.encrypt("password"),
       profiles: [adminProfile._id],
-      img: `${publicURI}/static/defaultart/user.jpg`,
+      img: `${HMLCDN}/user.jpg`,
     });
   const pModels = await models.model.find({});
   const pPermissions = await models.permissions.find({});
@@ -353,7 +371,7 @@ module.exports = async (
             execute: model.name === "script" ? [adminProfileId] : undefined,
             publicread: model._type === "theme",
             recursiveinit: false,
-            img: `${publicURI}/static/defaultart/permissions.jpg`,
+            img: `http://highmountainlabs.io/arclight/cdn/media/5.jpg`,
           })
       )
   );
@@ -370,7 +388,7 @@ module.exports = async (
   ["get", "post", "put", "delete"].map((s: string) =>
     app[s]("/api/:endpoint", (req: any, res: any) => r(req, res))
   );
-  modules.globals = { publicURI };
+  modules.globals = { publicURI, HMLCDN };
   await models.user.deleteMany({
     _unverified: true,
   });

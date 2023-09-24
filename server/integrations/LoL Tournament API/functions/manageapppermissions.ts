@@ -24,7 +24,7 @@ module.exports =
           edit: [adminProfileId],
           delete: [adminProfileId],
           publicread: false,
-          img: `${publicURI}/static/media/riotxlol.jpg`,
+          img: `http://highmountainlabs.io/arclight/cdn/media/riotxlol.jpg`,
         });
       if (!P2) {
         const M = await Modules._models.model.findOne({
@@ -41,7 +41,7 @@ module.exports =
           edit: [adminProfileId],
           delete: [adminProfileId],
           publicread: false,
-          img: `${publicURI}/static/media/riotxlol.jpg`,
+          img: `http://highmountainlabs.io/arclight/cdn/media/riotxlol.jpg`,
         });
       }
       if (fn && (!P || !P2)) fn("permissions");
