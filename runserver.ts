@@ -3,7 +3,7 @@ const server = require("./server/index");
 
 server({
   rootDirectory: __dirname,
-  database: "arclight",
+  database: "highmountainlabs.io",
   publicURI: `http://localhost:7001`,
   port: 7001,
   // cert: {
