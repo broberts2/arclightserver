@@ -1,17 +1,17 @@
 {
-	"active": false,
-	"settings": {},
-	"decorators": {
-		"description": "Mailer enables your server to send mail through any of the popular APIs such as Outlook or Gmail.",
-		"img": "static/integrationsart/mailer.jpg"
-	},
-	"apivalues": {
-		"host": "",
-		"port": 0,
-		"secure": false,
-		"auth": {
-			"user": "",
-			"pass": ""
-		}
-	}
+  "active": false,
+  "settings": {},
+  "decorators": {
+    "description": "Mailer enables your server to send mail through any of the popular APIs such as Outlook or Gmail.",
+    "img": "http://highmountainlabs.io/arclight/cdn/media/mailer.jpg"
+  },
+  "apivalues": {
+    "host": "",
+    "port": 0,
+    "secure": false,
+    "auth": {
+      "user": "",
+      "pass": ""
+    }
+  }
 }

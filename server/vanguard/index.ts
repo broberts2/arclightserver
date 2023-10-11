@@ -68,15 +68,15 @@ module.exports =
                 code: _.code,
                 msg: _.error,
               });
-          } else return cb(_.data && _.data._ ? _.data._ : null);
+          } else return cb(_ && _.data && _.data._ ? _.data._ : null);
+          const u = await modules._models.user.findOne({ _id: _.data._ });
+          if (!u)
+            return io.to(socket.id).emit(`servererror`, {
+              code: 500,
+              msg: `Unable to find user.`,
+            });
+          return cb(u._id);
         }
-        const u = await modules._models.user.findOne({ _id: _.data._ });
-        if (!u)
-          return io.to(socket.id).emit(`servererror`, {
-            code: 500,
-            msg: `Unable to find user.`,
-          });
-        return cb(u._id);
       }
     } catch (e: any) {
       io.to(socket.id).emit(`servererror`, {

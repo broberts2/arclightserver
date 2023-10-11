@@ -83,7 +83,7 @@ module.exports =
       else if (!msg.password) noauth(`Password required.`);
     } else if (msg._token) {
       const t = modules.jwt.verify(msg._token);
-      if (t.code === 200)
+      if (t && t.code === 200)
         u = await modules._models.user.findOne({
           _id: t.data._,
         });

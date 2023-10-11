@@ -1,9 +1,9 @@
 {
-	"active": false,
-	"settings": { "endpoints_active": false },
-	"decorators": {
-		"description": "Manages subscriptions with Highmountain Labs.",
-		"img": "static/integrationsart/hml.jpg"
-	},
-	"apivalues": {}
+  "active": false,
+  "settings": { "endpoints_active": false },
+  "decorators": {
+    "description": "Manages subscriptions with Highmountain Labs.",
+    "img": "http://highmountainlabs.io/arclight/cdn/media/hml.jpg"
+  },
+  "apivalues": {}
 }

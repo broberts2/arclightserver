@@ -17,7 +17,7 @@
   },
   "decorators": {
     "description": "LoL Tournament API links with an existing RIOT games API key, managing game stats and data compliance.",
-    "img": "static/integrationsart/riotxlol.jpg"
+    "img": "http://highmountainlabs.io/arclight/cdn/media/riotxlol.jpg"
   },
   "gamedataendpoint": "https://americas.api.riotgames.com/lol/match/v5/matches",
   "apivalues": {
