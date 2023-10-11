@@ -183,8 +183,37 @@ module.exports =
       calls.registeruser = true;
       calls.verifyregisteruser = true;
     }
-    if (true) {
-      customcalls["test_script"] = true;
+    if (modules?.Scripts && modules.Scripts["custom-call"]) {
+      const userProfileNames =
+        u && u.profiles
+          ? await modules._models.profile
+              .find({ _id: { $in: u.profiles } })
+              .then((p: any) => p.map((profile: any) => profile.name))
+          : undefined;
+      await Promise.all(
+        Object.keys(modules.Scripts["custom-call"]).map(async (s: string) => {
+          if (
+            modules.Scripts["custom-call"][s] &&
+            modules.Scripts["custom-call"][s].metadata
+          ) {
+            let metadata: any;
+            try {
+              metadata = JSON.parse(modules.Scripts["custom-call"][s].metadata);
+            } catch (e) {}
+            if (metadata && metadata.active) {
+              if (
+                (metadata.profiles && !metadata.profiles.length) ||
+                (userProfileNames &&
+                  userProfileNames.some((uP: string) =>
+                    metadata.profiles.includes(uP)
+                  ))
+              ) {
+                customcalls[s] = true;
+              }
+            }
+          }
+        })
+      );
     }
     if (msg && msg.redirect && u)
       io.to(socket.id).emit("redirect", { route: "/" });
