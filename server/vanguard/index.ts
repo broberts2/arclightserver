@@ -68,7 +68,9 @@ module.exports =
                 code: _.code,
                 msg: _.error,
               });
-          } else return cb(_ && _.data && _.data._ ? _.data._ : null);
+          } else {
+            return cb(_ && _.data && _.data._ ? _.data._ : null);
+          }
           const u = await modules._models.user.findOne({ _id: _.data._ });
           if (!u)
             return io.to(socket.id).emit(`servererror`, {
@@ -78,6 +80,7 @@ module.exports =
           return cb(u._id);
         }
       }
+      return cb();
     } catch (e: any) {
       io.to(socket.id).emit(`servererror`, {
         code: 500,
