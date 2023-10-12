@@ -6,7 +6,7 @@ module.exports =
     const pms = [];
     const c: any = async (gameNum: number) =>
       await Modules.fetch(
-        `https://americas.api.riotgames.com/lol/tournament/v4/codes?tournamentId=${Settings.apivalues.tournamentid}&api_key=${Settings.apivalues.tournamentapikey}`,
+        `https://americas.api.riotgames.com/lol/tournament/v5/codes?tournamentId=${Settings.apivalues.tournamentid}&api_key=${Settings.apivalues.tournamentapikey}`,
         {
           method: "post",
           headers: {

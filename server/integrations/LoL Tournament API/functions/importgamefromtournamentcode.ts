@@ -6,10 +6,10 @@ module.exports =
       msg: `Operation inactive.`,
     });
     const metadata = await fetch(
-      `https://americas.api.riotgames.com/lol/tournament/v4/codes/${msg.code}?api_key=${Settings.apivalues.tournamentapikey}`
+      `https://americas.api.riotgames.com/lol/tournament/v5/codes/${msg.code}?api_key=${Settings.apivalues.tournamentapikey}`
     ).then((res) => res.json());
     // const lobbyevents = await fetch(
-    // 	`https://americas.api.riotgames.com/lol/tournament/v4/lobby-events/by-code/${msg.code}?api_key=${Settings.apivalues.tournamentapikey}`
+    // 	`https://americas.api.riotgames.com/lol/tournament/v5/lobby-events/by-code/${msg.code}?api_key=${Settings.apivalues.tournamentapikey}`
     // ).then((res) => res.json());
     const gamedata = await fetch(
       `${Settings.gamedataendpoint}/${metadata.region}1_${metadata.id}?api_key=${Settings.apivalues.tournamentapikey}`
