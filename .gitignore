@@ -117,3 +117,5 @@ forms
 
 # Ignore .sfdx
 .sfdx/
+
+server/documents
