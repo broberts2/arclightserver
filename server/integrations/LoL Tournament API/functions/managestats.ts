@@ -18,7 +18,7 @@ module.exports =
           text: "LoL Game Stats",
           icon: "phoenix-framework",
           subicon: "phoenix-framework",
-          metaimg: `http://highmountainlabs.io/arclight/cdn/media/5.jpg`,
+          metaimg: `https://highmountainlabs.io/arclight/cdn/media/5.jpg`,
           league: {
             lookup: Settings.settings.leaguemodeltype,
             _type: "String",
@@ -84,7 +84,7 @@ module.exports =
           edit: [adminProfileId],
           delete: [adminProfileId],
           publicread: false,
-          img: `http://highmountainlabs.io/arclight/cdn/media/riotxlol.jpg`,
+          img: `https://highmountainlabs.io/arclight/cdn/media/riotxlol.jpg`,
         });
       }
       if (fn) fn("(M) lolgamestats");

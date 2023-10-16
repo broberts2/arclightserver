@@ -77,7 +77,7 @@ module.exports = async (
           text: "Profiles",
           icon: "id-badge",
           subicon: "id-card",
-          metaimg: `http://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
+          metaimg: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
           category: "",
         },
         BaseModelMod
@@ -120,7 +120,7 @@ module.exports = async (
           text: "Users",
           icon: "users",
           subicon: "user-gear",
-          metaimg: `http://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
+          metaimg: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
           category: "",
         },
         BaseModelMod
@@ -154,7 +154,7 @@ module.exports = async (
           text: "Settings",
           icon: "gears",
           subicon: "gear",
-          metaimg: `http://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
+          metaimg: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
           category: "",
         },
         BaseModelMod
@@ -230,7 +230,7 @@ module.exports = async (
           text: "Themes",
           icon: "paintbrush",
           subicon: "paintbrush",
-          metaimg: `http://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
+          metaimg: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
           category: "",
         },
         BaseModelMod
@@ -285,7 +285,7 @@ module.exports = async (
           text: "Endpoints",
           icon: "circle-nodes",
           subicon: "circle-nodes",
-          metaimg: `http://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
+          metaimg: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
           category: "",
         },
         BaseModelMod
@@ -371,7 +371,7 @@ module.exports = async (
             execute: model.name === "script" ? [adminProfileId] : undefined,
             publicread: model._type === "theme",
             recursiveinit: false,
-            img: `http://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
+            img: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
           })
       )
   );

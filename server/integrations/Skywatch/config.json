@@ -3,7 +3,7 @@
   "settings": {},
   "decorators": {
     "description": "Skywatch is the premier social hub for meteorological data and storm chasers.",
-    "img": "http://highmountainlabs.io/arclight/cdn/media/skywatch.jpg"
+    "img": "https://highmountainlabs.io/arclight/cdn/media/skywatch.jpg"
   },
   "apivalues": {}
 }
