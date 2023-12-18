@@ -26,14 +26,20 @@ module.exports =
         });
         if (
           modules.fs.existsSync(
-            `${__dirname}/../../media/${msg._id.toString()}.${Record._ext}`
+            `${modules.globals.publicURI}/static/media/${msg._id.toString()}.${
+              Record._ext
+            }`
           )
         )
           modules.fs.unlinkSync(
-            `${__dirname}/../../media/${msg._id.toString()}.${Record._ext}`
+            `${modules.globals.publicURI}/static/media/${msg._id.toString()}.${
+              Record._ext
+            }`
           );
         modules.fs.writeFileSync(
-          `${__dirname}/../../media/${msg._id.toString()}.${Record._ext}`,
+          `${modules.globals.publicURI}/static/media/${msg._id.toString()}.${
+            Record._ext
+          }`,
           msg.file,
           {
             encoding: "base64",

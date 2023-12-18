@@ -27,9 +27,13 @@ module.exports =
           .then((res: any) => res._ext);
         await modules._models.media.deleteOne({ _id: msg._id });
         if (
-          modules.fs.existsSync(`${__dirname}/../../media/${msg._id}.${_ext}`)
+          modules.fs.existsSync(
+            `${modules.globals.publicURI}/static/media/${msg._id}.${_ext}`
+          )
         )
-          modules.fs.unlinkSync(`${__dirname}/../../media/${msg._id}.${_ext}`);
+          modules.fs.unlinkSync(
+            `${modules.globals.publicURI}/static/media/${msg._id}.${_ext}`
+          );
       } else {
         after = await modules._models[msg._model][
           msg.search || !msg._id ? "deleteMany" : "deleteOne"
