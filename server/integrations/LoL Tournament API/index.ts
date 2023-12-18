@@ -22,6 +22,7 @@ module.exports = (modules: { [key: string]: any }, publicURI: string) => {
       );
     },
     onUpdate: async (Settings: any, fn: Function) => {
+      modules.Integrations["LoL Tournament API"].Settings = Settings;
       return await Promise.all(
         [
           "manageappmodels",

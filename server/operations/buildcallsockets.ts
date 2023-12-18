@@ -36,8 +36,8 @@ module.exports =
         );
       return Array.isArray(calls[k])
         ? calls[k].map((type: string) => {
-            socket.on(`${k}_${type}`, (msg: { [key: string]: any }) =>
-              v(
+            socket.on(`${k}_${type}`, (msg: { [key: string]: any }) => {
+              return v(
                 token ? token : msg?._token,
                 (userId: any) =>
                   isAppFn
@@ -49,8 +49,8 @@ module.exports =
                         socket
                       )({ ...msg, _model: type, userId }),
                 type
-              )
-            );
+              );
+            });
           })
         : socket.on(k, (msg: { [key: string]: any }) => {
             let Invokable;

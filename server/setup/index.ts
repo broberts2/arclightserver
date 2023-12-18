@@ -1,5 +1,4 @@
 const setupStaticDirectories = require("./setupStaticDirectories");
-const setupPermissionsModel = require("./setupPermissionsModel");
 
 module.exports = async (
   HMLCDN: string,
@@ -24,7 +23,8 @@ module.exports = async (
   runScripts: any,
   runRoutes: any,
   recursiveLookup: any,
-  fetch: any
+  fetch: any,
+  chokidar: any
 ) => {
   if (mongoose.connection.readyState < 1) {
     mongoose
@@ -36,7 +36,6 @@ module.exports = async (
         (err: any) => new Error(err)
       );
   }
-  setupStaticDirectories(rootDirectory, fs);
   const modules: {
     [key: string]: { [key: string]: any };
   } = {};
@@ -44,253 +43,16 @@ module.exports = async (
     [key: string]: { [key: string]: any };
   } = {};
   models["model"] = mongoose.model("model", new Schema({}, { strict: false }));
-  await setupPermissionsModel(models, BaseModelMod, publicURI, HMLCDN);
-  const profile = await models.model.findOne({
-    _type: "profile",
-  });
-  if (!profile)
-    await models.model.create(
-      Object.assign(
-        {
-          _type: "profile",
-          _system: true,
-          _managed: undefined,
-          _managedid: undefined,
-          name: {
-            _type: "String",
-            type: String,
-            unique: true,
-            required: true,
-          },
-          hierarchy: {
-            _type: "Number",
-            type: Number,
-            unique: false,
-            required: true,
-          },
-          img: {
-            _type: "String",
-            type: String,
-            unique: false,
-            required: false,
-          },
-          text: "Profiles",
-          icon: "id-badge",
-          subicon: "id-card",
-          metaimg: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
-          category: "",
-        },
-        BaseModelMod
-      )
-    );
-  const user = await models.model.findOne({
-    _type: "user",
-  });
-  if (!user)
-    await models.model.create(
-      Object.assign(
-        {
-          _type: "user",
-          _system: true,
-          username: {
-            _type: "String",
-            type: String,
-            unique: true,
-            required: true,
-          },
-          _password: {
-            _type: "String",
-            type: String,
-            unique: true,
-            required: true,
-          },
-          profiles: {
-            lookup: "profile",
-            _type: "Array",
-            type: Array,
-            unique: false,
-            required: false,
-          },
-          img: {
-            _type: "String",
-            type: String,
-            unique: false,
-            required: false,
-          },
-          text: "Users",
-          icon: "users",
-          subicon: "user-gear",
-          metaimg: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
-          category: "",
-        },
-        BaseModelMod
-      )
-    );
-  const settings = await models.model.findOne({ _type: "settings" });
-  if (!settings)
-    await models.model.create(
-      Object.assign(
-        {
-          _system: true,
-          _type: "settings",
-          name: {
-            _type: "String",
-            type: String,
-            unique: true,
-            required: true,
-          },
-          img: {
-            _type: "String",
-            type: String,
-            unique: false,
-            required: false,
-          },
-          userregistration: {
-            _type: "Boolean",
-            type: Boolean,
-            unique: false,
-            required: false,
-          },
-          text: "Settings",
-          icon: "gears",
-          subicon: "gear",
-          metaimg: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
-          category: "",
-        },
-        BaseModelMod
-      )
-    );
-  const theme = await models.model.findOne({ _type: "theme" });
-  if (!theme)
-    await models.model.create(
-      Object.assign(
-        {
-          _system: true,
-          _type: "theme",
-          name: {
-            _type: "String",
-            type: String,
-            unique: true,
-            required: true,
-          },
-          img: {
-            _type: "String",
-            type: String,
-            unique: false,
-            required: false,
-          },
-          fontfamily: {
-            _type: "String",
-            type: String,
-            unique: true,
-            required: true,
-          },
-          primarytextcolor: {
-            _type: "String",
-            type: String,
-            unique: true,
-            required: true,
-          },
-          secondarytextcolor: {
-            _type: "String",
-            type: String,
-            unique: true,
-            required: true,
-          },
-          backgroundprimarycolor: {
-            _type: "String",
-            type: String,
-            unique: true,
-            required: true,
-          },
-          backgroundsecondarycolor: {
-            _type: "String",
-            type: String,
-            unique: true,
-            required: true,
-          },
-          backgroundtertiarycolor: {
-            _type: "String",
-            type: String,
-            unique: true,
-            required: true,
-          },
-          backgroundquarternarycolor: {
-            _type: "String",
-            type: String,
-            unique: true,
-            required: true,
-          },
-          backgroundquinarycolor: {
-            _type: "String",
-            type: String,
-            unique: true,
-            required: true,
-          },
-          text: "Themes",
-          icon: "paintbrush",
-          subicon: "paintbrush",
-          metaimg: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
-          category: "",
-        },
-        BaseModelMod
-      )
-    );
-  const endpoint = await models.model.findOne({ _type: "endpoint" });
-  if (!endpoint)
-    await models.model.create(
-      Object.assign(
-        {
-          _system: true,
-          _type: "endpoint",
-          name: {
-            _type: "String",
-            type: String,
-            unique: true,
-            required: true,
-          },
-          img: {
-            _type: "String",
-            type: String,
-            unique: false,
-            required: false,
-          },
-          script: "",
-          accessurl: {
-            _type: "String",
-            type: String,
-            unique: true,
-            required: true,
-          },
-          accesstype: "",
-          profileaccess: {
-            lookup: "profile",
-            _type: "Array",
-            type: Array,
-            unique: false,
-            required: false,
-          },
-          apikeyaccess: {
-            _type: "String",
-            type: String,
-            unique: false,
-            required: false,
-          },
-          nonstrict: {
-            _type: "Boolean",
-            type: Boolean,
-            unique: false,
-            required: false,
-          },
-          text: "Endpoints",
-          icon: "circle-nodes",
-          subicon: "circle-nodes",
-          metaimg: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
-          category: "",
-        },
-        BaseModelMod
-      )
-    );
+  await Promise.all(
+    fs.readdirSync(`${__dirname}/models`).map(async (file: string) => {
+      return await require(`./models/${file}`)(
+        models,
+        BaseModelMod,
+        publicURI,
+        HMLCDN
+      );
+    })
+  );
   const _buildModels = __buildModels(modules, models);
   await _buildModels();
   let adminProfile = await models.profile.findOne({ name: "administrator" });
@@ -406,6 +168,8 @@ module.exports = async (
       jwt,
       vanguard,
       Cryptr,
+      chokidar,
     })
   );
+  setupStaticDirectories(rootDirectory, fs, require("./mediaWatcher")(modules));
 };

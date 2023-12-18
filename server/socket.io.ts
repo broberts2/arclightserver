@@ -7,6 +7,7 @@ module.exports = (
   modules: { [key: string]: any }
 ) => {
   const io = require("socket.io")(server, {
+    maxHttpBufferSize: 1e8,
     cors: {
       origin: "*",
     },

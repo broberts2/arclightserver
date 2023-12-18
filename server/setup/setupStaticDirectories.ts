@@ -1,4 +1,4 @@
-module.exports = (rootDirectory: string, fs: any) => {
+module.exports = (rootDirectory: string, fs: any, mediaWatcher: Function) => {
   ["media", "scripts", "forms"].map((s: string) =>
     !fs.existsSync(`${rootDirectory}/${s}`)
       ? fs.mkdirSync(`${rootDirectory}/${s}`)
@@ -22,4 +22,5 @@ module.exports = (rootDirectory: string, fs: any) => {
     fs.mkdirSync(`${rootDirectory}/scripts/endpoint`);
   if (!fs.existsSync(`${rootDirectory}/scripts/universal`))
     fs.mkdirSync(`${rootDirectory}/scripts/universal`);
+  mediaWatcher(`${rootDirectory}/media`);
 };

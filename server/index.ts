@@ -3,6 +3,7 @@ const Express = express.Express;
 const fs = require("fs");
 const path = require("path");
 const nodeFetch = require("node-fetch");
+const chokidar = require("chokidar");
 const config = require("./config");
 const SocketIO = require("./socket.io");
 const Secrets = require("./secrets");
@@ -108,8 +109,10 @@ const buildIntegrations =
       return modules;
     });
     Object.keys(settings).map((k: string) => {
-      if (settings[k].active && modules.Integrations[k].setup)
+      if (settings[k].active && modules.Integrations[k].setup) {
         modules.Integrations[k].setup(settings[k]);
+        modules.Integrations[k].Settings = settings[k];
+      }
     });
     if (!modules.fs) modules.fs = fs;
     return modules;
@@ -153,6 +156,7 @@ const runScripts =
     await Promise.all(
       Object.keys(modules.Scripts[ctx])
         .filter((script: string) => {
+          if (!modules.Scripts[ctx][script]) return;
           const _ = JSON.parse(modules.Scripts[ctx][script].metadata);
           return _.active && _.context === ctx && msg.msg._model === _.model;
         })
@@ -309,6 +313,7 @@ module.exports = (cfg: {
     runScripts,
     runRoutes,
     recursiveLookup,
-    nodeFetch
+    nodeFetch,
+    chokidar
   );
 };
