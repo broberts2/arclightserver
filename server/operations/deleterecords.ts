@@ -28,11 +28,11 @@ module.exports =
         await modules._models.media.deleteOne({ _id: msg._id });
         if (
           modules.fs.existsSync(
-            `${modules.globals.publicURI}/static/media/${msg._id}.${_ext}`
+            `${modules.rootDirectory}/media/${msg._id}.${_ext}`
           )
         )
           modules.fs.unlinkSync(
-            `${modules.globals.publicURI}/static/media/${msg._id}.${_ext}`
+            `${modules.rootDirectory}/media/${msg._id}.${_ext}`
           );
       } else {
         after = await modules._models[msg._model][

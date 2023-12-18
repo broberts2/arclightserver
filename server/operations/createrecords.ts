@@ -36,9 +36,9 @@ module.exports =
           }
         );
         modules.fs.writeFileSync(
-          `${
-            modules.globals.publicURI
-          }/static/media/${MediaRecord._id.toString()}.${MediaRecord._ext}`,
+          `${modules.rootDirectory}/media/${MediaRecord._id.toString()}.${
+            MediaRecord._ext
+          }`,
           msg.file,
           {
             encoding: "base64",
