@@ -18,6 +18,8 @@ module.exports = (rootDirectory: string, fs: any, mediaWatcher: Function) => {
   );
   if (!fs.existsSync(`${rootDirectory}/scripts/custom-call`))
     fs.mkdirSync(`${rootDirectory}/scripts/custom-call`);
+  if (!fs.existsSync(`${rootDirectory}/scripts/custom-call-admin`))
+    fs.mkdirSync(`${rootDirectory}/scripts/custom-call-admin`);
   if (!fs.existsSync(`${rootDirectory}/scripts/endpoint`))
     fs.mkdirSync(`${rootDirectory}/scripts/endpoint`);
   if (!fs.existsSync(`${rootDirectory}/scripts/universal`))

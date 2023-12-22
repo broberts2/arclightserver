@@ -87,21 +87,19 @@ module.exports =
       socket.on(k, (msg: { [key: string]: any }) => {
         if (
           k &&
-          modules?.Scripts["custom-call"] &&
-          modules.Scripts["custom-call"][k] &&
-          modules.Scripts["custom-call"][k].fn
+          (modules?.Scripts["custom-call"] ||
+            modules?.Scripts["custom-call-admin"])
         ) {
-          v(
-            token ? token : msg?._token,
-            () =>
-              eval(modules.Scripts["custom-call"][k].fn)(
-                modules,
-                io,
-                socket,
-                msg
-              ),
-            { type: "custom-call", script: k }
-          );
+          const script =
+            modules.Scripts["custom-call"][k] ||
+            modules.Scripts["custom-call-admin"][k];
+          if (script && script.metadata && script.fn) {
+            v(
+              token ? token : msg?._token,
+              () => eval(script.fn)(modules, io, socket, msg),
+              { type: "custom-call", script: k }
+            );
+          }
         }
       });
     });

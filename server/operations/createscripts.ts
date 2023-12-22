@@ -16,7 +16,10 @@ module.exports =
           i
             ? JSON.stringify(value)
             : `async (ServerObject, ${
-                value.context === "custom-call" ? "io, socket, " : ""
+                value.context === "custom-call" ||
+                value.context === "custom-call-admin"
+                  ? "io, socket, "
+                  : ""
               }${value.context === "endpoint" ? "Req" : "Ctx"}) => {\n\n};`,
           {
             encoding: "utf8",
@@ -28,7 +31,10 @@ module.exports =
       modules.Scripts[msg.ctx][value.name.split(".")[0]] = {
         metadata: JSON.stringify(value),
         fn: `async (ServerObject, ${
-          value.context === "custom-call" ? "io, socket, " : ""
+          value.context === "custom-call" ||
+          value.context === "custom-call-admin"
+            ? "io, socket, "
+            : ""
         }${value.context === "endpoint" ? "Req" : "Ctx"}) => {
           ${
             true
