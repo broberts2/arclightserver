@@ -7,5 +7,9 @@
     "description": "Crux is the premier drafting tool for amateur League of Legends. Supports dynamic data syncronization, music, and replays.",
     "img": "https://highmountainlabs.io/arclight/cdn/media/crux.jpg"
   },
-  "apivalues": {}
+  "apivalues": {
+    "datadragonurl": "https://ddragon.leagueoflegends.com",
+    "communitydragoncdnurl": "https://cdn.communitydragon.org",
+    "communitydragonrawurl": "https://raw.communitydragon.org"
+  }
 }

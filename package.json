@@ -1,6 +1,6 @@
 {
   "name": "@highmountainlabs/arclight-server",
-  "version": "0.3.73",
+  "version": "0.3.74",
   "main": "server/index.js",
   "module": "server/index.mjs",
   "types": "server/index.d.ts",
@@ -53,6 +53,7 @@
     "node-fetch": "^2.6.1",
     "nodemailer": "^6.9.3",
     "nodemon": "^2.0.20",
+    "openai": "^4.24.1",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-dts": "^5.2.0",
     "rollup-plugin-folder-input": "^1.0.1",

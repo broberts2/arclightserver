@@ -1,0 +1,13 @@
+{
+  "active": false,
+  "settings": {
+    "endpoints_active": false
+  },
+  "decorators": {
+    "description": "OpenAI is an AI research and deployment company. Our mission is to ensure that artificial general intelligence benefits all of humanity.",
+    "img": "https://highmountainlabs.io/arclight/cdn/media/openai.jpg"
+  },
+  "apivalues": {
+    "client_secret": ""
+  }
+}
