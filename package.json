@@ -1,6 +1,6 @@
 {
   "name": "@highmountainlabs/arclight-server",
-  "version": "0.3.75",
+  "version": "0.3.76",
   "main": "server/index.js",
   "module": "server/index.mjs",
   "types": "server/index.d.ts",
