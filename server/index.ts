@@ -209,7 +209,8 @@ const recursiveLookup =
           .find(query ? query : {}, T)
           .skip(pagination.skip)
           .limit(pagination.limit)
-          .sort(pagination.sort);
+          .sort(pagination.sort)
+          .collation({ locale: "en", caseLevel: false });
         return await Promise.all(
           R.map(async (record: any) => {
             const _: { [key: string]: any } = {};

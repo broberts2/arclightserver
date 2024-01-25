@@ -11,7 +11,12 @@ module.exports =
         let index = msg.index;
         let limit = msg.search ? msg.search.limit : null;
         const recursive = msg._recursive;
-        const sort = msg.search ? msg.search.sort : null;
+        const sort = msg.search
+          ? {
+              ...msg.search.sort,
+              [msg.search.key ? msg.search.key : "name"]: 1,
+            }
+          : null;
         const skip = msg.search ? msg.search.skip : 0;
         if (msg._model === "user" && msg._self && msg.userId) {
           msg.search = { _id: msg.userId };
@@ -46,7 +51,8 @@ module.exports =
               .find(msg?.search)
               .skip(skip)
               .limit(limit)
-              .sort(sort);
+              .sort(sort)
+              .collation({ locale: "en", caseLevel: false });
         const afterGet = await modules.runScripts(
           "after-get",
           io,

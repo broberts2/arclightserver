@@ -43,14 +43,19 @@ module.exports = (modules: { [key: string]: any }) => async (Settings: any) => {
       await modules._models.user.updateOne(
         { _managed: "Discord", _managedid: _a.user.id },
         {
-          profiles:
-            a.length > b.length
-              ? u.profiles
-                ? u.profiles.concat(profiles)
-                : (u.profiles = [profiles])
-              : u.profiles
-              ? u.profiles.filter((p: string) => !profiles.includes(p))
-              : (u.profiles = []),
+          profiles: (a.length > b.length
+            ? u.profiles
+              ? u.profiles.concat(profiles)
+              : (u.profiles = [profiles])
+            : u.profiles
+            ? u.profiles.filter((p: string) => !profiles.includes(p))
+            : (u.profiles = [])
+          )
+            .flat(Infinity)
+            .filter(
+              (value: string, index: number, self: Array<string>) =>
+                self.indexOf(value) === index
+            ),
         }
       );
     }
@@ -79,6 +84,12 @@ module.exports = (modules: { [key: string]: any }) => async (Settings: any) => {
       _managed: "Discord",
     });
     const discordusers = await modules.Integrations.Discord.API.getuser();
+    const profiles: any = {};
+    await modules._models.profile
+      .find({
+        _managed: "Discord",
+      })
+      .then((PS: any) => PS.map((P: any) => (profiles[P._managedid] = P)));
     return await Promise.all(
       discordusers.map(async (du: { [key: string]: any }) => {
         if (
@@ -87,8 +98,34 @@ module.exports = (modules: { [key: string]: any }) => async (Settings: any) => {
             (u: { [key: string]: any }) =>
               u.username === `(M) ${du.user.username}`
           )
-        )
+        ) {
           return await createuser(du);
+        } else {
+          const UU = users.find(
+            (u: { [key: string]: any }) =>
+              u.username === `(M) ${du.user.username}`
+          );
+          if (!UU) return;
+          const UURoles = du.roles.cache.filter(
+            (role: any) => role.id !== "84794584420323328"
+          );
+          if (!UU.profiles) UU.profiles = [];
+          if (
+            !(
+              UU.profiles.length !== UURoles.size ||
+              !UURoles.find((role: any) => profiles[role.id])
+            )
+          )
+            return;
+          return await modules._models.user.updateOne(
+            { _id: UU._id.toString() },
+            {
+              profiles: UURoles.filter((role: any) => profiles[role.id]).map(
+                (role: any) => profiles[role.id]._id.toString()
+              ),
+            }
+          );
+        }
       })
     );
   } else {
