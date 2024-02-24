@@ -14,7 +14,7 @@ module.exports =
         const sort = msg.search
           ? {
               ...msg.search.sort,
-              [msg.search.key ? msg.search.key : "name"]: 1,
+              // [msg.search.key ? msg.search.key : "name"]: 1,
             }
           : null;
         const skip = msg.search ? msg.search.skip : 0;
@@ -51,8 +51,8 @@ module.exports =
               .find(msg?.search)
               .skip(skip)
               .limit(limit)
-              .sort(sort)
-              .collation({ locale: "en", caseLevel: false });
+              .sort(sort);
+        // .collation({ locale: "en", caseLevel: false });
         const afterGet = await modules.runScripts(
           "after-get",
           io,

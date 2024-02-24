@@ -209,8 +209,8 @@ const recursiveLookup =
           .find(query ? query : {}, T)
           .skip(pagination.skip)
           .limit(pagination.limit)
-          .sort(pagination.sort)
-          .collation({ locale: "en", caseLevel: false });
+          .sort(pagination.sort);
+        // .collation({ locale: "en", caseLevel: false });
         return await Promise.all(
           R.map(async (record: any) => {
             const _: { [key: string]: any } = {};
@@ -272,7 +272,7 @@ module.exports = (cfg: {
   );
   app.use(require("cors")());
   app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb" }));
+  app.use(express.urlencoded({ limit: "50mb", extended: false }));
   let server;
   if (cfg.cert)
     server = require("https").createServer(
