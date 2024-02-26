@@ -123,13 +123,6 @@ module.exports = (modules: any, publicURI: string) => async (Settings: any) => {
           required: null,
           searchable: null,
         },
-        events: {
-          _type: "Array",
-          lookup: null,
-          unique: null,
-          required: null,
-          searchable: null,
-        },
       });
     }
     const OrgModel = await modules._models.model.findOne({
