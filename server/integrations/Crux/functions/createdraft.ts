@@ -26,6 +26,8 @@ module.exports = (modules: any, publicURI: string) => async (msg: any) => {
       },
       {
         data: JSON.stringify({
+          timerseconds: 30,
+          timeroverflow: 2,
           createddate: new Date().toString(),
           bluetoken,
           redtoken,

@@ -12,8 +12,11 @@ module.exports = (
     onDeactivate: async (Settings: any) => {
       await modules.Integrations.Crux.deactivate(Settings);
     },
-    updateDraft: async (Settings: any) => {
-      await modules.Integrations.Crux.updateDraft(Settings);
+    kickOff: async (_id: string, io: any, socket: any) => {
+      await modules.Integrations.Crux.kickoff(_id, io, socket);
+    },
+    updateDraft: (_id: string, io: any, socket: any) => {
+      return modules.Integrations.Crux.updatedraft(_id, io, socket);
     },
     invokables: [
       {
@@ -47,8 +50,18 @@ module.exports = (
         permissions: ["publicedit"],
         name: "crux_readycheck",
         fn: async (msg: { [key: string]: any }, io: any, socket: any) => {
-          const fn = await modules.Integrations.Crux.readycheck(msg);
-          return io.to(socket.id).emit(`crux_readycheck`, fn);
+          return await modules.Integrations.Crux.readycheck(msg, io, socket);
+        },
+      },
+      {
+        permissions: ["publicedit"],
+        name: "crux_selectchampion",
+        fn: async (msg: { [key: string]: any }, io: any, socket: any) => {
+          return await modules.Integrations.Crux.selectchampion(
+            msg,
+            io,
+            socket
+          );
         },
       },
     ],

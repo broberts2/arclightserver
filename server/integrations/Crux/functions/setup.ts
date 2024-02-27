@@ -1,5 +1,7 @@
 module.exports = (modules: any, publicURI: string) => async (Settings: any) => {
   if (Settings.active) {
+    if (!modules.Integrations.Crux.___runningdrafts)
+      modules.Integrations.Crux.___runningdrafts = {};
     const championtype = "champion";
     const res = await modules
       .fetch(`${Settings.apivalues.datadragonurl}/api/versions.json`)
@@ -287,5 +289,6 @@ module.exports = (modules: any, publicURI: string) => async (Settings: any) => {
       };
       run(champions.shift());
     })();
+    await modules.Integrations.Crux.resumerunningdrafts(Settings);
   }
 };

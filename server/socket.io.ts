@@ -29,6 +29,7 @@ module.exports = (
     .readdirSync(`${__dirname}/events`)
     .map((e: string) => require(`${__dirname}/events/${e}`)(io, operations));
   modules.buildIntegrations();
+  modules.io = io;
   server.listen(port, () => {
     console.log(
       `⚡️ Arclight Server is running at http://localhost:${port}  ⚡️`

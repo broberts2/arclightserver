@@ -9,7 +9,9 @@ module.exports = (modules: any, publicURI: string) => async (msg: any) => {
     const Draft = await modules._models.cruxdraft.findOne({ _id: obj.id });
     if (!Draft) return { error: `Draft doesn't exist.`, code: 401 };
     return {
-      success: "true",
+      room: Draft._id.toString(),
+      bluecaptain: obj.k === JSON.parse(Draft.data).bluetoken,
+      redcaptain: obj.k === JSON.parse(Draft.data).redtoken,
     };
   }
 };
