@@ -133,7 +133,7 @@ module.exports = async (
             execute: model.name === "script" ? [adminProfileId] : undefined,
             publicread: model._type === "theme",
             recursiveinit: false,
-            img: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
+            img: `https://highmountainlabs.io/cdn/arclight/media/datamodel.jpg`,
           })
       )
   );

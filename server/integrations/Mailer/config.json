@@ -3,7 +3,7 @@
   "settings": {},
   "decorators": {
     "description": "Mailer enables your server to send mail through any of the popular APIs such as Outlook or Gmail.",
-    "img": "https://highmountainlabs.io/arclight/cdn/media/mailer.jpg"
+    "img": "https://highmountainlabs.io/cdn/arclight/media/mailer.jpg"
   },
   "apivalues": {
     "host": "",

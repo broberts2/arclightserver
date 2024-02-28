@@ -65,7 +65,7 @@ module.exports = async (
           text: "Events",
           icon: "calendar",
           subicon: "calendar",
-          metaimg: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
+          metaimg: `https://highmountainlabs.io/cdn/arclight/media/datamodel.jpg`,
           category: "",
         },
         BaseModelMod

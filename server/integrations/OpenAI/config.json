@@ -5,7 +5,7 @@
   },
   "decorators": {
     "description": "OpenAI is an AI research and deployment company. Our mission is to ensure that artificial general intelligence benefits all of humanity.",
-    "img": "https://highmountainlabs.io/arclight/cdn/media/openai.jpg"
+    "img": "https://highmountainlabs.io/cdn/arclight/media/openai.jpg"
   },
   "apivalues": {
     "client_secret": ""

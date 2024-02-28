@@ -8,7 +8,7 @@ module.exports = (modules: any, publicURI: string) => async (msg: any) => {
     const _Draft = await modules._models.cruxdraft
       .insertMany({
         name: new Date().toString(),
-        img: `https://highmountainlabs.io/arclight/cdn/media/crux.jpg`,
+        img: `https://highmountainlabs.io/cdn/arclight/media/crux.jpg`,
         theme: undefined,
         cruxorg: undefined,
         events: undefined,

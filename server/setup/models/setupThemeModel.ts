@@ -74,7 +74,7 @@ module.exports = async (
           text: "Themes",
           icon: "paintbrush",
           subicon: "paintbrush",
-          metaimg: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
+          metaimg: `https://highmountainlabs.io/cdn/arclight/media/datamodel.jpg`,
           category: "",
         },
         BaseModelMod

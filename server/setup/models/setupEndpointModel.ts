@@ -53,7 +53,7 @@ module.exports = async (
           text: "Endpoints",
           icon: "circle-nodes",
           subicon: "circle-nodes",
-          metaimg: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
+          metaimg: `https://highmountainlabs.io/cdn/arclight/media/datamodel.jpg`,
           category: "",
         },
         BaseModelMod

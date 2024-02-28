@@ -25,7 +25,7 @@ module.exports = (modules: any, publicURI: string) => async (Settings: any) => {
         category: "",
         icon: "fire-flame-curved",
         subicon: "fire-flame-curved",
-        metaimg: "https://highmountainlabs.io/arclight/cdn/media/champion.jpg",
+        metaimg: "https://highmountainlabs.io/cdn/arclight/media/champion.jpg",
         name: {
           _type: "String",
           lookup: null,
@@ -89,7 +89,7 @@ module.exports = (modules: any, publicURI: string) => async (Settings: any) => {
         category: "",
         icon: "chess-knight",
         subicon: "chess-knight",
-        metaimg: "https://highmountainlabs.io/arclight/cdn/media/champion.jpg",
+        metaimg: "https://highmountainlabs.io/cdn/arclight/media/champion.jpg",
         name: {
           _type: "String",
           lookup: null,
@@ -139,7 +139,7 @@ module.exports = (modules: any, publicURI: string) => async (Settings: any) => {
         category: "",
         icon: "user-astronaut",
         subicon: "user-astronaut",
-        metaimg: "https://highmountainlabs.io/arclight/cdn/media/champion.jpg",
+        metaimg: "https://highmountainlabs.io/cdn/arclight/media/champion.jpg",
         name: {
           _type: "String",
           lookup: null,
@@ -175,7 +175,7 @@ module.exports = (modules: any, publicURI: string) => async (Settings: any) => {
         category: "",
         icon: "ethereum",
         subicon: "ethereum",
-        metaimg: "https://highmountainlabs.io/arclight/cdn/media/champion.jpg",
+        metaimg: "https://highmountainlabs.io/cdn/arclight/media/champion.jpg",
         name: {
           _type: "String",
           lookup: null,
@@ -221,7 +221,7 @@ module.exports = (modules: any, publicURI: string) => async (Settings: any) => {
         edit: [adminProfileId],
         delete: [adminProfileId],
         publicread: true,
-        img: `https://highmountainlabs.io/arclight/cdn/media/champion.jpg`,
+        img: `https://highmountainlabs.io/cdn/arclight/media/champion.jpg`,
       });
     }
     const P2 = await modules._models.permissions.findOne({
@@ -241,7 +241,7 @@ module.exports = (modules: any, publicURI: string) => async (Settings: any) => {
         edit: [adminProfileId],
         delete: [adminProfileId],
         publicread: true,
-        img: `https://highmountainlabs.io/arclight/cdn/media/crux.jpg`,
+        img: `https://highmountainlabs.io/cdn/arclight/media/crux.jpg`,
       });
     }
     const P3 = await modules._models.permissions.findOne({
@@ -261,7 +261,7 @@ module.exports = (modules: any, publicURI: string) => async (Settings: any) => {
         edit: [adminProfileId],
         delete: [adminProfileId],
         publicread: false,
-        img: `https://highmountainlabs.io/arclight/cdn/media/champion.jpg`,
+        img: `https://highmountainlabs.io/cdn/arclight/media/champion.jpg`,
       });
     }
     await modules._buildModels();

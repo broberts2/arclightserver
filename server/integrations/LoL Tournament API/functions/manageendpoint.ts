@@ -16,7 +16,7 @@ module.exports =
             name: "(M) riotgameslol",
             _managed: "LoL Tournament API",
             hierarchy: 10,
-            img: `https://highmountainlabs.io/arclight/cdn/media/riotgames.png`,
+            img: `https://highmountainlabs.io/cdn/arclight/media/riotgames.png`,
           })
           .then((r: any) => r[0]);
       }
@@ -31,7 +31,7 @@ module.exports =
           username: "(M) riotgameslol",
           _password: Modules.Cryptr.encrypt("123456"),
           profiles: [P._id],
-          img: `https://highmountainlabs.io/arclight/cdn/media/riotgames.png`,
+          img: `https://highmountainlabs.io/cdn/arclight/media/riotgames.png`,
         });
       }
       await Modules._models.endpoint.insertMany({
@@ -39,7 +39,7 @@ module.exports =
         _managed: "LoL Tournament API",
         accesstype: "post",
         accessurl: Settings.settings.endpoints.accessurl,
-        img: `https://highmountainlabs.io/arclight/cdn/media/riotgames.png`,
+        img: `https://highmountainlabs.io/cdn/arclight/media/riotgames.png`,
         name: "(M) riotgames-post-stats",
         profileaccess: [P._id],
         recordtype: "(M) lolgamestats",

@@ -15,7 +15,7 @@ const runRoutes = require("./runroutes");
 const jwt = require("jsonwebtoken");
 const Cryptr = require("cryptr");
 
-const HMLCDN = `https://highmountainlabs.io/arclight/cdn/media`;
+const HMLCDN = `https://highmountainlabs.io/cdn/arclight/media`;
 
 const Schema = mongoose.Schema;
 

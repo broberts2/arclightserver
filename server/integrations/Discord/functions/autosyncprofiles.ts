@@ -6,7 +6,7 @@ module.exports = (modules: { [key: string]: any }) => async (Settings: any) => {
       _system: true,
       name: `(M) ${r.name}`,
       hierarchy: 10,
-      img: `https://highmountainlabs.io/arclight/cdn/media/discord.jpg`,
+      img: `https://highmountainlabs.io/cdn/arclight/media/discord.jpg`,
     });
   const roleCreate = async (role: { [key: string]: any }) =>
     !role.managed ? buildrole(role) : null;

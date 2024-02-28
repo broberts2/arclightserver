@@ -41,7 +41,7 @@ module.exports = async (
           text: "Users",
           icon: "users",
           subicon: "user-gear",
-          metaimg: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
+          metaimg: `https://highmountainlabs.io/cdn/arclight/media/datamodel.jpg`,
           category: "",
         },
         BaseModelMod

@@ -10,7 +10,7 @@ module.exports = (modules: { [key: string]: any }) => async (Settings: any) => {
       _managed: "Discord",
       _system: true,
       username: `(M) ${u.user.username}`,
-      img: `https://highmountainlabs.io/arclight/cdn/media/discord.jpg`,
+      img: `https://highmountainlabs.io/cdn/arclight/media/discord.jpg`,
     });
   };
   const deleteuser = async (role: { [key: string]: any }) => {

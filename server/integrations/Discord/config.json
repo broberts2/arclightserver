@@ -10,7 +10,7 @@
   },
   "decorators": {
     "description": "Discord servers are organized into topic-based channels where you can collaborate, share, and just talk about your day without clogging up a group chat.",
-    "img": "https://highmountainlabs.io/arclight/cdn/media/discord.jpg"
+    "img": "https://highmountainlabs.io/cdn/arclight/media/discord.jpg"
   },
   "apivalues": {
     "token": "",

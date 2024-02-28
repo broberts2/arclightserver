@@ -10,7 +10,7 @@ module.exports =
           _managed: "LoL Tournament API",
           _type: "(M) summoner",
           text: "(M) Summoner",
-          metaimg: `https://highmountainlabs.io/arclight/cdn/media/5.jpg`,
+          metaimg: `https://highmountainlabs.io/cdn/arclight/media/5.jpg`,
           category: "",
           icon: "",
           subicon: "hat-wizard",

@@ -36,7 +36,7 @@ module.exports = async (
           text: "Profiles",
           icon: "id-badge",
           subicon: "id-card",
-          metaimg: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
+          metaimg: `https://highmountainlabs.io/cdn/arclight/media/datamodel.jpg`,
           category: "",
         },
         BaseModelMod

@@ -59,7 +59,7 @@ module.exports = async (
           text: "Permissions",
           icon: "shield",
           subicon: "user-shield",
-          metaimg: `https://highmountainlabs.io/arclight/cdn/media/datamodel.jpg`,
+          metaimg: `https://highmountainlabs.io/cdn/arclight/media/datamodel.jpg`,
           category: "",
         },
         BaseModelMod

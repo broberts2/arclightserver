@@ -31,7 +31,7 @@ module.exports = async (
           text: "Media",
           icon: "photo-film",
           subicon: "photo-film",
-          metaimg: `https://highmountainlabs.io/arclight/cdn/media/media.jpg`,
+          metaimg: `https://highmountainlabs.io/cdn/arclight/media/media.jpg`,
           category: "",
         },
         BaseModelMod
