@@ -33,23 +33,29 @@ module.exports = (modules: any, publicURI: string) => async (msg: any) => {
           redtoken,
           links: {
             bluelink:
-              process.env.REACT_APP_ENVIRONMENT === "production"
+              process.env.NODE_ENV === "production"
                 ? `https://crux.highmountainlabs.io/cruxdraft${
                     p ? `/${p}` : ""
                   }?d=${bt}`
-                : `http://localhost:3000/cruxdraft${p ? `/${p}` : ""}?d=${bt}`,
+                : `http://crux.localhost:3000/cruxdraft${
+                    p ? `/${p}` : ""
+                  }?d=${bt}`,
             redlink:
-              process.env.REACT_APP_ENVIRONMENT === "production"
+              process.env.NODE_ENV === "production"
                 ? `https://crux.highmountainlabs.io/cruxdraft${
                     p ? `/${p}` : ""
                   }?d=${rt}`
-                : `http://localhost:3000/cruxdraft${p ? `/${p}` : ""}?d=${rt}`,
+                : `http://crux.localhost:3000/cruxdraft${
+                    p ? `/${p}` : ""
+                  }?d=${rt}`,
             spectatorlink:
-              process.env.REACT_APP_ENVIRONMENT === "production"
+              process.env.NODE_ENV === "production"
                 ? `https://crux.highmountainlabs.io/cruxdraft${
                     p ? `/${p}` : ""
                   }?d=${st}`
-                : `http://localhost:3000/cruxdraft${p ? `/${p}` : ""}?d=${st}`,
+                : `http://crux.localhost:3000/cruxdraft${
+                    p ? `/${p}` : ""
+                  }?d=${st}`,
           },
         }),
       }
