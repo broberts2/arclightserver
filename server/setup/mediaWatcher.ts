@@ -33,10 +33,14 @@ module.exports = (modules: any) => (dir: string) => {
           img: `${modules.globals.publicURI}/static/media/${MediaRecord._id}.${op.ext}`,
         }
       );
-      modules.fs.renameSync(
-        path,
-        `${modules.rootDirectory}/media/${MediaRecord._id}.${op.ext}`
-      );
+      try {
+        modules.fs.renameSync(
+          path,
+          `${modules.rootDirectory}/media/${MediaRecord._id}.${op.ext}`
+        );
+      } catch (e) {
+        console.log(e);
+      }
     }
   });
   modules.chokidar.watch(dir).on("unlink", async (path: any, stats: any) => {
