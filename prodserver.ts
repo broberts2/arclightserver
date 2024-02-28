@@ -5,7 +5,7 @@ const root = "/etc/letsencrypt/live/highmountainlabs.io";
 prodserver({
   rootDirectory: __dirname,
   database: "highmountainlabsio",
-  publicURI: `http://localhost:7001`,
+  publicURI: `https://highmountainlabs.io:7001`,
   port: 7001,
   cert: {
     key: `${root}/privkey.pem`,
