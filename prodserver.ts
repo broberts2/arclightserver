@@ -1,4 +1,4 @@
-const prodserver = require("@highmountainlabs/arclight-server");
+const prodserver = require("./server/index");
 
 const root = "/etc/letsencrypt/live/highmountainlabs.io";
 
