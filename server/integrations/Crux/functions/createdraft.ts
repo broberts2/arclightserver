@@ -33,19 +33,19 @@ module.exports = (modules: any, publicURI: string) => async (msg: any) => {
           redtoken,
           links: {
             bluelink:
-              process.env.NODE_ENV === "production"
+              process.env.REACT_APP_ENVIRONMENT === "production"
                 ? `https://crux.highmountainlabs.io/cruxdraft${
                     p ? `/${p}` : ""
                   }?d=${bt}`
                 : `http://localhost:3000/cruxdraft${p ? `/${p}` : ""}?d=${bt}`,
             redlink:
-              process.env.NODE_ENV === "production"
+              process.env.REACT_APP_ENVIRONMENT === "production"
                 ? `https://crux.highmountainlabs.io/cruxdraft${
                     p ? `/${p}` : ""
                   }?d=${rt}`
                 : `http://localhost:3000/cruxdraft${p ? `/${p}` : ""}?d=${rt}`,
             spectatorlink:
-              process.env.NODE_ENV === "production"
+              process.env.REACT_APP_ENVIRONMENT === "production"
                 ? `https://crux.highmountainlabs.io/cruxdraft${
                     p ? `/${p}` : ""
                   }?d=${st}`
