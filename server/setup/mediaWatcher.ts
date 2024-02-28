@@ -12,6 +12,7 @@ module.exports = (modules: any) => (dir: string) => {
   modules.chokidar.watch(dir).on("add", async (path: any, stats: any) => {
     if (!stats) return;
     const op = operation("add", path);
+    console.log(op, path);
     if (!op) return;
     if (modules.mongoose.isValidObjectId(op.filename)) {
       // const MediaRecord = await modules._models.media.findOne({
