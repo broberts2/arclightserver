@@ -1,3 +1,3 @@
 module.exports = {
-  prodraft: require("./executionorder-prodraft.ts"),
+  prodraft: require("./executionorder-prodraft"),
 };
