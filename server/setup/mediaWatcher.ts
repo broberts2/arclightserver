@@ -39,7 +39,7 @@ module.exports = (modules: any) => (dir: string) => {
           `${modules.rootDirectory}/media/${MediaRecord._id}.${op.ext}`
         );
       } catch (e) {
-        console.log(e);
+        // console.log(e);
       }
     }
   });

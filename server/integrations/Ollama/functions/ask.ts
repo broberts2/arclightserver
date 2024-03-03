@@ -15,7 +15,7 @@ module.exports =
       })
       .then((res: any) => res.json())
       .then((res: any) => {
-        res.response = res.response.trim();
+        res.response = res?.response ? res.response.trim() : "";
         return res;
       });
     return res;
