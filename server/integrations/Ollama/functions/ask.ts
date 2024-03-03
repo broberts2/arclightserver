@@ -3,17 +3,22 @@ module.exports =
   async (Settings: any, prompt: string) => {
     try {
       const res = await modules
-        .fetch(`http://127.0.0.1:11434/api/generate`, {
-          method: "post",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            stream: false,
-            model: "ivy",
-            prompt,
-          }),
-        })
+        .fetch(
+          Settings.settings.model_host
+            ? `http://127.0.0.1:11434/api/generate`
+            : `${Settings.apivalues.host_ip}/api/ollama_ask?apitoken=${Settings.apivalues.api_key}`,
+          {
+            method: "post",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              stream: false,
+              model: "ivy",
+              prompt,
+            }),
+          }
+        )
         .then((res: any) => res.json())
         .then((res: any) => {
           res.response = res?.response ? res.response.trim() : "";

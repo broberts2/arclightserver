@@ -1,13 +1,15 @@
 {
   "active": false,
   "settings": {
-    "endpoints_active": false
+    "endpoints_active": false,
+    "model_host": false
   },
   "decorators": {
     "description": "Ollama allows you to run open-source large language models.",
     "img": "https://highmountainlabs.io/cdn/arclight/media/ollama.jpg"
   },
   "apivalues": {
-    "client_secret": ""
+    "host_ip": "",
+    "api_key": ""
   }
 }
