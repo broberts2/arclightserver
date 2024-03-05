@@ -1,4 +1,5 @@
 module.exports = (modules: { [key: string]: any }) => async (obj: any) => {
+  console.log(obj);
   try {
     let newId = undefined;
     let Conversation: any;
@@ -32,7 +33,7 @@ module.exports = (modules: { [key: string]: any }) => async (obj: any) => {
       .fetch(
         obj.Settings.settings.model_host
           ? `http://127.0.0.1:11434/api/chat`
-          : `${obj.Settings.apivalues.host_ip}/api/ollama_ask?apitoken=${obj.Settings.apivalues.api_key}`,
+          : `${obj.Settings.apivalues.host_ip}/api/ollama_chat?apitoken=${obj.Settings.apivalues.api_key}`,
         {
           method: "post",
           headers: {
