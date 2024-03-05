@@ -5,8 +5,8 @@ module.exports =
       const res = await modules
         .fetch(
           Settings.settings.model_host
-            ? `http://127.0.0.1:11434/api/generate`
-            : `${Settings.apivalues.host_ip}/api/ollama_ask?apitoken=${Settings.apivalues.api_key}`,
+            ? `http://127.0.0.1:11434/api/embeddings`
+            : `${Settings.apivalues.host_ip}/api/ollama_embeddings?apitoken=${Settings.apivalues.api_key}`,
           {
             method: "post",
             headers: {
@@ -14,16 +14,12 @@ module.exports =
             },
             body: JSON.stringify({
               stream: false,
-              model: "ivy",
+              model: "nomic-embed-text",
               prompt,
             }),
           }
         )
-        .then((res: any) => res.json())
-        .then((res: any) => {
-          res.response = res?.response ? res.response.trim() : "";
-          return res;
-        });
+        .then((res: any) => res.json());
       return res;
     } catch (e) {
       return "[Failed to connect with ollama]";

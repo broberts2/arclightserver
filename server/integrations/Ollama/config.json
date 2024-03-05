@@ -10,6 +10,7 @@
   },
   "apivalues": {
     "host_ip": "",
-    "api_key": ""
+    "api_key": "",
+    "default_model": ""
   }
 }
