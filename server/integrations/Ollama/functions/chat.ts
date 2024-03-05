@@ -1,4 +1,5 @@
 module.exports = (modules: { [key: string]: any }) => async (obj: any) => {
+  const encryption = true;
   try {
     if (!obj.Settings.settings.model_host) {
       const res = await await modules
@@ -57,7 +58,9 @@ module.exports = (modules: { [key: string]: any }) => async (obj: any) => {
           messages: (Conversation?.history
             ? Conversation.history.map((C: any) => ({
                 role: C.role,
-                content: modules.Cryptr.decrypt(C.content),
+                content: encryption
+                  ? modules.Cryptr.decrypt(C.content)
+                  : C.content,
               }))
             : []
           ).concat({
@@ -72,16 +75,36 @@ module.exports = (modules: { [key: string]: any }) => async (obj: any) => {
           res.message.content = res.message.content.trim();
         if (!obj.msg.init && Conversation?._id) {
           if (res?.message?.content) {
-            const Message = await modules._models.ollama_message
+            const UserMessage = await modules._models.ollama_message
               .insertMany({
                 img: "https://highmountainlabs.io/cdn/arclight/media/ollama.jpg",
                 role: "user",
-                content: modules.Cryptr.encrypt(res.message.content),
+                content: encryption
+                  ? modules.Cryptr.encrypt(res.message.content)
+                  : obj.msg.prompt,
+              })
+              .then((res: any) => res[0]);
+            const AssistantMessage = await modules._models.ollama_message
+              .insertMany({
+                img: "https://highmountainlabs.io/cdn/arclight/media/ollama.jpg",
+                role: "assistant",
+                content: encryption
+                  ? modules.Cryptr.encrypt(res.message.content)
+                  : res.message.content,
               })
               .then((res: any) => res[0]);
             await modules._models.ollama_conversation.updateOne(
               { _id: Conversation._id.toString() },
-              { $push: { history: Message._id.toString() } }
+              {
+                $push: {
+                  history: {
+                    $each: [
+                      UserMessage._id.toString(),
+                      AssistantMessage._id.toString(),
+                    ],
+                  },
+                },
+              }
             );
           }
         }
