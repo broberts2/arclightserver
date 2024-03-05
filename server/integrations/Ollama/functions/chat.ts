@@ -1,7 +1,7 @@
 module.exports = (modules: { [key: string]: any }) => async (obj: any) => {
   try {
-    if (!obj.Settings.settings.model_host)
-      return await await modules
+    if (!obj.Settings.settings.model_host) {
+      const res = await await modules
         .fetch(
           `${obj.Settings.apivalues.host_ip}/api/ollama_chat?apitoken=${obj.Settings.apivalues.api_key}`,
           {
@@ -9,10 +9,14 @@ module.exports = (modules: { [key: string]: any }) => async (obj: any) => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ msg: obj.msg }),
+            body: JSON.stringify({
+              msg: { ...obj.msg },
+            }),
           }
         )
         .then((res: any) => res.json());
+      return res;
+    }
     let newId = undefined;
     let Conversation: any;
     if (obj.msg.id) {
