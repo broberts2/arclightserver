@@ -1,5 +1,4 @@
 module.exports = (modules: { [key: string]: any }) => async (obj: any) => {
-  console.log(obj);
   try {
     let newId = undefined;
     let Conversation: any;
@@ -60,17 +59,19 @@ module.exports = (modules: { [key: string]: any }) => async (obj: any) => {
         if (res?.message?.content)
           res.message.content = res.message.content.trim();
         if (!obj.msg.init) {
-          const Message = await modules._models.ollama_message
-            .insertMany({
-              img: "https://highmountainlabs.io/cdn/arclight/media/ollama.jpg",
-              role: "user",
-              content: modules.Cryptr.encrypt(res.message.content),
-            })
-            .then((res: any) => res[0]);
-          await modules._models.ollama_conversation.updateOne(
-            { _id: Conversation._id.toString() },
-            { $push: { history: Message._id.toString() } }
-          );
+          if (res?.message?.content) {
+            const Message = await modules._models.ollama_message
+              .insertMany({
+                img: "https://highmountainlabs.io/cdn/arclight/media/ollama.jpg",
+                role: "user",
+                content: modules.Cryptr.encrypt(res.message.content),
+              })
+              .then((res: any) => res[0]);
+            await modules._models.ollama_conversation.updateOne(
+              { _id: Conversation._id.toString() },
+              { $push: { history: Message._id.toString() } }
+            );
+          }
         }
         return res;
       });
