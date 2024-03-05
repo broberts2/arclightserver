@@ -1,5 +1,18 @@
 module.exports = (modules: { [key: string]: any }) => async (obj: any) => {
   try {
+    if (!obj.Settings.settings.model_host)
+      return await await modules
+        .fetch(
+          `${obj.Settings.apivalues.host_ip}/api/ollama_chat?apitoken=${obj.Settings.apivalues.api_key}`,
+          {
+            method: "post",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ msg: obj.msg }),
+          }
+        )
+        .then((res: any) => res.json());
     let newId = undefined;
     let Conversation: any;
     if (obj.msg.id) {
@@ -29,36 +42,31 @@ module.exports = (modules: { [key: string]: any }) => async (obj: any) => {
       );
     }
     const res = await modules
-      .fetch(
-        obj.Settings.settings.model_host
-          ? `http://127.0.0.1:11434/api/chat`
-          : `${obj.Settings.apivalues.host_ip}/api/ollama_chat?apitoken=${obj.Settings.apivalues.api_key}`,
-        {
-          method: "post",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            stream: false,
-            model: obj.Settings.apivalues.default_model,
-            messages: (Conversation?.history
-              ? Conversation.history.map((C: any) => ({
-                  role: C.role,
-                  content: modules.Cryptr.decrypt(C.content),
-                }))
-              : []
-            ).concat({
-              role: "user",
-              content: obj.msg.prompt,
-            }),
+      .fetch(`http://127.0.0.1:11434/api/chat`, {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          stream: false,
+          model: obj.Settings.apivalues.default_model,
+          messages: (Conversation?.history
+            ? Conversation.history.map((C: any) => ({
+                role: C.role,
+                content: modules.Cryptr.decrypt(C.content),
+              }))
+            : []
+          ).concat({
+            role: "user",
+            content: obj.msg.prompt,
           }),
-        }
-      )
+        }),
+      })
       .then((res: any) => res.json())
       .then(async (res: any) => {
         if (res?.message?.content)
           res.message.content = res.message.content.trim();
-        if (!obj.msg.init) {
+        if (!obj.msg.init && Conversation?._id) {
           if (res?.message?.content) {
             const Message = await modules._models.ollama_message
               .insertMany({
