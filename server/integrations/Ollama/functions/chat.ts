@@ -3,6 +3,7 @@ module.exports =
   async (obj: {
     Settings: any;
     msg: {
+      redirect?: boolean;
       prompt: string;
       id?: "string";
       context?: Array<{
@@ -12,9 +13,11 @@ module.exports =
     };
   }) => {
     try {
+      const redir = obj.msg.redirect;
+      delete obj.msg.redirect;
       const res = await modules
         .fetch(
-          obj.Settings.settings.model_host
+          obj.Settings.settings.model_host && !redir
             ? `http://127.0.0.1:11434/api/chat`
             : `${obj.Settings.apivalues.host_ip}/api/ollama_ask?apitoken=${obj.Settings.apivalues.api_key}`,
           {
@@ -23,7 +26,7 @@ module.exports =
               "Content-Type": "application/json",
             },
             body: JSON.stringify(
-              obj.Settings.settings.model_host
+              obj.Settings.settings.model_host && !redir
                 ? {
                     stream: false,
                     model: obj.Settings.apivalues.default_model,
@@ -34,7 +37,7 @@ module.exports =
                         })
                       : undefined,
                   }
-                : { msg: obj.msg }
+                : obj.msg
             ),
           }
         )
