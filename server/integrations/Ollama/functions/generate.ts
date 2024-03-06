@@ -15,12 +15,16 @@ module.exports =
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-              stream: false,
-              model: obj.Settings.apivalues.default_model,
-              prompt: obj.msg.prompt,
-              context: obj.msg.context,
-            }),
+            body: JSON.stringify(
+              obj.Settings.settings.model_host
+                ? {
+                    stream: false,
+                    model: obj.Settings.apivalues.default_model,
+                    prompt: obj.msg.prompt,
+                    context: obj.msg.context,
+                  }
+                : { msg: obj.msg }
+            ),
           }
         )
         .then((res: any) => res.json())

@@ -6,7 +6,7 @@ module.exports =
     Settings: any;
     msg: { prompt: string; context?: string; init?: boolean; id?: string };
   }) => {
-    // console.log(`received - ${JSON.stringify(obj.msg)}`);
+    console.log(`received - ${JSON.stringify(obj.msg)}`);
     try {
       const context = obj.msg.id
         ? await modules._models.ollama_conversation
@@ -54,7 +54,10 @@ module.exports =
         );
       }
       delete res.context;
-      // console.log(`finished - ${JSON.stringify(res)}`);
+      console.log(
+        `-------------------                         -------------------------------`
+      );
+      console.log(`finished - ${JSON.stringify(res)}`);
       return res;
     } catch (e) {
       console.log(e);

@@ -22,16 +22,20 @@ module.exports =
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-              stream: false,
-              model: obj.Settings.apivalues.default_model,
-              messages: obj.msg.context
-                ? obj.msg.context.concat({
-                    role: "user",
-                    content: obj.msg.prompt,
-                  })
-                : undefined,
-            }),
+            body: JSON.stringify(
+              obj.Settings.settings.model_host
+                ? {
+                    stream: false,
+                    model: obj.Settings.apivalues.default_model,
+                    messages: obj.msg.context
+                      ? obj.msg.context.concat({
+                          role: "user",
+                          content: obj.msg.prompt,
+                        })
+                      : undefined,
+                  }
+                : { msg: obj.msg }
+            ),
           }
         )
         .then((res: any) => res.json())
