@@ -1,12 +1,15 @@
 module.exports =
   (modules: { [key: string]: any }) =>
-  async (Settings: any, prompt: string) => {
+  async (obj: {
+    Settings: any;
+    msg: { prompt: string; id?: "string"; context?: string };
+  }) => {
     try {
       const res = await modules
         .fetch(
-          Settings.settings.model_host
+          obj.Settings.settings.model_host
             ? `http://127.0.0.1:11434/api/generate`
-            : `${Settings.apivalues.host_ip}/api/ollama_ask?apitoken=${Settings.apivalues.api_key}`,
+            : `${obj.Settings.apivalues.host_ip}/api/ollama_ask?apitoken=${obj.Settings.apivalues.api_key}`,
           {
             method: "post",
             headers: {
@@ -14,8 +17,9 @@ module.exports =
             },
             body: JSON.stringify({
               stream: false,
-              model: Settings.apivalues.default_model,
-              prompt,
+              model: obj.Settings.apivalues.default_model,
+              prompt: obj.msg.prompt,
+              context: obj.msg.context,
             }),
           }
         )
@@ -31,6 +35,7 @@ module.exports =
         });
       return res;
     } catch (e) {
+      console.log(e);
       return "[Failed to connect with ollama]";
     }
   };
