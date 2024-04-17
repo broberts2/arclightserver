@@ -32,7 +32,7 @@ module.exports = (
   modules.io = io;
   server.listen(port, () => {
     console.log(
-      `⚡️ Arclight Server is running at http://localhost:${port}  ⚡️`
+      `⚡️ Arclight Server is running at http://localhost:${port}  ⚡️\nRoot Directory: ${modules.rootDirectory}`
     );
   });
   return server;
