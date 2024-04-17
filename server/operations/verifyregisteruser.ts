@@ -36,6 +36,13 @@ module.exports =
       { _id: U._id },
       { $unset: { _unverified: true } }
     );
+    io.to(socket.id).emit(`verifyregisteruser`, {
+      ...U._doc,
+      _password: undefined,
+      __v: undefined,
+      _token: modules.jwt.sign({ _: U._id.toString() }),
+      _unverified: undefined,
+    });
     io.to(socket.id).emit(`clearurlparameters`);
     return io.to(socket.id).emit(`serversuccess`, {
       code: 203,
