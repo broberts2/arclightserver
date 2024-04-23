@@ -7,6 +7,7 @@ module.exports = (
   const _: { [key: string]: any } = {
     setup: async (Settings: any) => {
       await modules.Integrations.Ollama.manageappmodels(Settings);
+      await modules.Integrations.Ollama.setupdb();
     },
     onUpdate: async (Settings: any) => {},
     onDeactivate: async (Settings: any) => {

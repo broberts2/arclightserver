@@ -9,11 +9,13 @@ const config = require("./config");
 const SocketIO = require("./socket.io");
 const Secrets = require("./secrets");
 const mongoose = require("mongoose");
+const ChromaDB = require("chromadb");
 const vanguard = require("./vanguard");
 const setup = require("./setup");
 const runRoutes = require("./runroutes");
 const jwt = require("jsonwebtoken");
 const Cryptr = require("cryptr");
+const sentencize = require("@stdlib/nlp-sentencize");
 
 const HMLCDN = `https://highmountainlabs.io/cdn/arclight/media`;
 
@@ -316,6 +318,8 @@ module.exports = (cfg: {
     runRoutes,
     recursiveLookup,
     nodeFetch,
-    chokidar
+    chokidar,
+    ChromaDB,
+    sentencize
   );
 };

@@ -2,7 +2,8 @@
   "active": false,
   "settings": {
     "endpoints_active": false,
-    "model_host": false
+    "model_host": false,
+    "ragdatabase": "default"
   },
   "decorators": {
     "description": "Ollama allows you to run open-source large language models.",

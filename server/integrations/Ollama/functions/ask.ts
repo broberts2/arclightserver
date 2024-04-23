@@ -1,9 +1,8 @@
-const CHAT_MODE = "chat";
+const CHAT_MODE: string = "generate";
 
 module.exports =
   (modules: { [key: string]: any }) =>
   async (obj: {
-    Settings: any;
     msg: {
       prompt: string;
       context?: string;
@@ -19,11 +18,9 @@ module.exports =
               .findOne({ _id: obj.msg.id })
               .then((res: any) => res.history)
           : [];
-      const res = await modules.Integrations.Ollama[
-        CHAT_MODE === "chat" ? "chat" : "generate"
-      ]({
-        Settings: obj.Settings,
-        msg: { ...obj.msg, context },
+      const res = await modules.Integrations.Ollama[CHAT_MODE]({
+        ...obj.msg,
+        context,
       });
       if (!obj.msg.init && !obj.msg.id && !obj.msg.redirect) {
         const Conversation = await modules._models.ollama_conversation
@@ -60,7 +57,6 @@ module.exports =
         );
       }
       delete res.context;
-      console.log(res);
       return res;
     } catch (e) {
       console.log(e);
