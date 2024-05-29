@@ -16,7 +16,8 @@ const runRoutes = require("./runroutes");
 const jwt = require("jsonwebtoken");
 const Cryptr = require("cryptr");
 const sentencize = require("@stdlib/nlp-sentencize");
-require("web-streams-polyfill/es6");
+const streams = require("web-streams-polyfill");
+const readable = new streams.ReadableStream();
 
 const HMLCDN = `https://highmountainlabs.io/cdn/arclight/media`;
 
