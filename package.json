@@ -1,6 +1,6 @@
 {
   "name": "@highmountainlabs/arclight-server",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "main": "server/index.js",
   "module": "server/index.mjs",
   "types": "server/index.d.ts",
@@ -69,7 +69,9 @@
     "shx": "^0.3.4",
     "socket.io": "^4.5.2",
     "ts-node": "^10.9.1",
-    "tslib": "^2.5.0"
+    "tslib": "^2.5.0",
+    "undici": "^6.18.2",
+    "web-streams-polyfill": "^4.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-image": "^3.0.2",
