@@ -17,6 +17,8 @@ const jwt = require("jsonwebtoken");
 const Cryptr = require("cryptr");
 const sentencize = require("@stdlib/nlp-sentencize");
 
+globalThis.fetch = nodeFetch;
+
 const HMLCDN = `https://highmountainlabs.io/cdn/arclight/media`;
 
 const Schema = mongoose.Schema;
