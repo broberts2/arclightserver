@@ -29,6 +29,7 @@ module.exports =
           io,
           socket
         )({ msg, records: null });
+        console.log(msg);
         if (beforeGet && !beforeGet.success)
           throw new Error(`Script Error: ${beforeGet.error}`);
         if (msg.search) {

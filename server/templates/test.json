@@ -1,0 +1,24 @@
+{
+  "title": "Community Feedback",
+  "backgroundimage": "https://highmountainlabs.io/cdn/arclight/media/ollama.jpg",
+  "description": "",
+  "controls": [
+    {
+      "type": "text",
+      "value": "Test Template"
+    },
+    {
+      "type": "divide"
+    },
+    {
+      "type": "text",
+      "value": "Submit your response here."
+    },
+    {
+      "type": "textarea",
+      "description": "",
+      "defaultvalue": "",
+      "required": true
+    }
+  ]
+}

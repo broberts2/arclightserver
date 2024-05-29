@@ -300,7 +300,6 @@ module.exports = (cfg: {
     BaseModelMod,
     __buildModels,
     fs,
-    Secrets,
     server,
     app,
     SocketIO,

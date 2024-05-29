@@ -12,7 +12,7 @@ module.exports = (Modules: any, publicURI: string) => async (Settings: any) => {
         text: "ollama_conversation",
         metaimg: `https://highmountainlabs.io/cdn/arclight/media/ollama.jpg`,
         category: "",
-        icon: "",
+        icon: "comments",
         subicon: "comments",
         name: {
           _type: "String",
@@ -34,6 +34,33 @@ module.exports = (Modules: any, publicURI: string) => async (Settings: any) => {
         },
       });
     }
+    // const Collection = await Modules._models.model.findOne({
+    //   _type: "ollama_collection",
+    // });
+    // if (!Collection) {
+    //   await Modules._models.model.insertMany({
+    //     _system: false,
+    //     _managed: "Ollama",
+    //     _type: "ollama_collection",
+    //     text: "ollama_collection",
+    //     metaimg: `https://highmountainlabs.io/cdn/arclight/media/ollama.jpg`,
+    //     category: "",
+    //     icon: "box-open",
+    //     subicon: "box-open",
+    //     name: {
+    //       _type: "String",
+    //       lookup: null,
+    //       unique: null,
+    //       required: true,
+    //     },
+    //     img: {
+    //       _type: "String",
+    //       lookup: null,
+    //       unique: null,
+    //       required: true,
+    //     },
+    //   });
+    // }
   }
   if (!Settings.active) {
     await Promise.all(

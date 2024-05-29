@@ -21,6 +21,7 @@ module.exports =
         .then((res: any) => res.json());
       return res.embedding;
     } catch (e) {
+      console.log(e);
       return "[Failed to connect with ollama]";
     }
   };

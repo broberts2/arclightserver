@@ -3,6 +3,10 @@ module.exports =
   async (obj: { data: Array<string> | string; prompt: string }) => {
     try {
       obj.data = modules.Integrations.Ollama.chunker(obj.data, 7, 2);
+      const ChromaCollection =
+        await modules.Chroma.ChromaClient.getOrCreateCollection({
+          name: modules.Integrations.Ollama.Settings.settings.ragdatabase,
+        });
       if (Array.isArray(obj.data)) {
         const embeddings: Array<number> = [];
         await Promise.all(
@@ -22,7 +26,7 @@ module.exports =
           });
           return _;
         })();
-        await modules.Chroma.ChromaCollection.upsert({
+        await ChromaCollection.upsert({
           ids: __.ids,
           embeddings,
           metadatas: __.metadatas,
@@ -33,7 +37,7 @@ module.exports =
         const embeddings = await modules.Integrations.Ollama.embeddings(
           obj.data
         );
-        await modules.Chroma.ChromaCollection.upsert({
+        await ChromaCollection.upsert({
           ids: `${obj.prompt}___0`,
           embeddings,
           metadatas: { source: obj.prompt },

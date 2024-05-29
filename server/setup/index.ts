@@ -11,7 +11,6 @@ module.exports = async (
   BaseModelMod: { [key: string]: any },
   __buildModels: Function,
   fs: any,
-  Secrets: any,
   server: any,
   app: any,
   SocketIO: any,
@@ -116,8 +115,6 @@ module.exports = async (
         { _type: "event" },
         { _type: "form" },
         { _type: "form template" },
-        { _type: "report" },
-        { _type: "report template" },
       ])
       .filter(
         (model: any) =>
@@ -135,7 +132,7 @@ module.exports = async (
             execute: model.name === "script" ? [adminProfileId] : undefined,
             publicread: model._type === "theme",
             recursiveinit: false,
-            img: `https://highmountainlabs.io/cdn/arclight/media/datamodel.jpg`,
+            img: `https://highmountainlabs.io/cdn/arclight/media/permissions.jpg`,
           })
       )
   );

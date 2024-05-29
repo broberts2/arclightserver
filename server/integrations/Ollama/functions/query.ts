@@ -7,6 +7,7 @@ module.exports =
         prompt: modelQuery,
       }).then((res: any) => res.message);
     } catch (e) {
+      console.log(e);
       return "[Failed to connect with ollama]";
     }
   };
