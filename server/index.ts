@@ -15,6 +15,7 @@ const setup = require("./setup");
 const runRoutes = require("./runroutes");
 const jwt = require("jsonwebtoken");
 const Cryptr = require("cryptr");
+const moment = require("moment");
 const sentencize = require("@stdlib/nlp-sentencize");
 const streams = require("web-streams-polyfill");
 const readable = new streams.ReadableStream();
@@ -321,6 +322,7 @@ module.exports = (cfg: {
     nodeFetch,
     chokidar,
     ChromaDB,
-    sentencize
+    sentencize,
+    moment
   );
 };

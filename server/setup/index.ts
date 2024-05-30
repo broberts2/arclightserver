@@ -25,7 +25,8 @@ module.exports = async (
   fetch: any,
   chokidar: any,
   ChromaDB: any,
-  sentencize: any
+  sentencize: any,
+  moment: any
 ) => {
   if (mongoose.connection.readyState < 1) {
     mongoose
@@ -170,6 +171,7 @@ module.exports = async (
       chokidar,
       ChromaDB,
       sentencize,
+      moment,
     })
   );
   setupStaticDirectories(rootDirectory, fs, require("./mediaWatcher")(modules));
