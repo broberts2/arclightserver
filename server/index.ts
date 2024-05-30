@@ -17,8 +17,11 @@ const jwt = require("jsonwebtoken");
 const Cryptr = require("cryptr");
 const moment = require("moment");
 const sentencize = require("@stdlib/nlp-sentencize");
-const streams = require("web-streams-polyfill");
-const readable = new streams.ReadableStream();
+
+if (typeof ReadableStream === "undefined") {
+  global.ReadableStream =
+    require("web-streams-polyfill/ponyfill").ReadableStream;
+}
 
 const HMLCDN = `https://highmountainlabs.io/cdn/arclight/media`;
 
