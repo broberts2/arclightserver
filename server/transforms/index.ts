@@ -1,11 +1,14 @@
 const _k =
   (msg: { [key: string]: any }, model: { [key: string]: any }, k: string) =>
-  (key: string) =>
-    msg[k] && msg[k][key]
-      ? msg[k][key]
-      : model[k] && model[k][key]
-      ? model[k]._type
-      : null;
+  (key: string) => {
+    const val =
+      msg[k] && msg[k][key]
+        ? msg[k][key]
+        : model[k] && model[k][key] && msg[k][key]
+        ? model[k]._type
+        : null;
+    return val;
+  };
 
 module.exports = (_buildModels: Function) => ({
   reduce: (msg: any, model?: { [key: string]: any }, newModel?: boolean) => {
@@ -29,9 +32,9 @@ module.exports = (_buildModels: Function) => ({
                   ? model[k]._type
                   : null,
               lookup: __k("lookup"),
+              adminlookup: __k("adminlookup"),
               unique: __k("unique"),
               required: __k("required"),
-              searchable: __k("searchable"),
             }
           : null;
       } else UpdateObj[k] = a;

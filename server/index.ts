@@ -19,8 +19,8 @@ const moment = require("moment");
 const sentencize = require("@stdlib/nlp-sentencize");
 
 if (typeof ReadableStream === "undefined") {
-  global.ReadableStream =
-    require("web-streams-polyfill/ponyfill").ReadableStream;
+  const streams = require("web-streams-polyfill");
+  global.ReadableStream = new streams.ReadableStream();
 }
 
 const HMLCDN = `https://highmountainlabs.io/cdn/arclight/media`;
