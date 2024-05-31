@@ -13,6 +13,7 @@ module.exports = async (
         {
           _type: "article",
           _system: true,
+          views: {},
           title: {
             _type: "String",
             type: String,

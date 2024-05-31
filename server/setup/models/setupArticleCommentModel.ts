@@ -31,14 +31,14 @@ module.exports = async (
             unique: false,
             required: false,
           },
-          owner: {
+          articleowner: {
             _type: "String",
             lookup: "article",
             type: String,
             unique: false,
             required: false,
           },
-          author: {
+          owner: {
             _type: "String",
             lookup: "user",
             type: String,

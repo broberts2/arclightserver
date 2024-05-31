@@ -1,7 +1,7 @@
 const Config: {
-	database: string;
+  database: string;
 } = {
-	database: `arclight`,
+  database: `arclight`,
 };
 
 module.exports = Config;
