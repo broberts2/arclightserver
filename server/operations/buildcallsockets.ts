@@ -68,7 +68,11 @@ module.exports =
                   .find((Invokable: any) => Invokable.name === k)
                   .fn(msg, io, socket);
             }
-            if (k === "registeruser" || k === "verifyregisteruser")
+            if (
+              k === "registeruser" ||
+              k === "verifyregisteruser" ||
+              k === "identifyself"
+            )
               return operations[k](io, socket)(msg);
             v(
               token ? token : msg?._token,

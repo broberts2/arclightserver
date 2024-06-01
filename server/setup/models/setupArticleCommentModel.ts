@@ -51,6 +51,12 @@ module.exports = async (
             unique: false,
             required: false,
           },
+          updateddate: {
+            _type: "Date",
+            type: Date,
+            unique: false,
+            required: false,
+          },
           text: "Comments",
           icon: "feather-pointed",
           subicon: "comments",

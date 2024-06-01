@@ -226,5 +226,6 @@ module.exports =
       if (Array.isArray(customcalls[k]))
         customcalls[k] = [...new Set(customcalls[k])];
     });
+    calls.identifyself = true;
     cb(calls, customcalls, token);
   };

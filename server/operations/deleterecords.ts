@@ -50,6 +50,12 @@ module.exports =
         [msg._model]: after,
         // _triggerFetch: msg._model === "media",
       });
+      if (!before.length) {
+        return io.to(socket.id).emit(`serverwarning`, {
+          code: 500,
+          msg: `Record(s) not found.`,
+        });
+      }
       return io.to(socket.id).emit(`serversuccess`, {
         code: nopanel ? 210 : 203,
         msg: `Delete successful.`,

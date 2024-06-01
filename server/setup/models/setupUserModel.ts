@@ -38,6 +38,12 @@ module.exports = async (
             unique: false,
             required: false,
           },
+          avatar: {
+            _type: "String",
+            type: String,
+            unique: false,
+            required: false,
+          },
           text: "Users",
           icon: "users",
           subicon: "user-gear",
