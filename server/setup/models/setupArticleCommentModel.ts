@@ -38,6 +38,13 @@ module.exports = async (
             unique: false,
             required: false,
           },
+          commentowner: {
+            _type: "String",
+            lookup: "articlecomment",
+            type: String,
+            unique: false,
+            required: false,
+          },
           owner: {
             _type: "String",
             lookup: "user",

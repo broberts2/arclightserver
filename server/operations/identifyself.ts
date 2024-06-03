@@ -13,7 +13,7 @@ module.exports =
         .findOne({ _id: id.data._ })
         .then((U: any) => {
           const _: any = {};
-          if (U._doc)
+          if (U?._doc)
             Object.keys(U._doc).map((k: string) => {
               if (k === "_id" || k.charAt(0) !== "_") _[k] = U[k];
             });
