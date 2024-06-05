@@ -8,7 +8,7 @@ module.exports = (app: any, port: number, modules: { [key: string]: any }) => {
       (() => {
         const _cfg: any = {};
         Object.keys(modules.cert).map((k: string) => {
-          if (modules.cert) _cfg[k] = fs.readFileSync(modules.cert[k], "utf8");
+          if (modules.cert) _cfg[k] = _fs.readFileSync(modules.cert[k], "utf8");
         });
         return _cfg;
       })(),
