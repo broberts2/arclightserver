@@ -19,16 +19,17 @@ const moment = require("moment");
 const multer = require("multer");
 const sentencize = require("@stdlib/nlp-sentencize");
 
-const uploadImage = multer({
-  storage: multer.diskStorage({
-    destination: (req: any, file: any, callback: any) => {
-      callback(null, `${__dirname}/../media`);
-    },
-    filename: (req: any, file: any, callback: any) => {
-      callback(null, file.originalname);
-    },
-  }),
-}).single("image");
+const uploadImage = (dir: string) =>
+  multer({
+    storage: multer.diskStorage({
+      destination: (req: any, file: any, callback: any) => {
+        callback(null, `${dir}/media`);
+      },
+      filename: (req: any, file: any, callback: any) => {
+        callback(null, file.originalname);
+      },
+    }),
+  }).single("image");
 
 if (typeof ReadableStream === "undefined") {
   const streams = require("web-streams-polyfill");
@@ -378,7 +379,7 @@ module.exports = (cfg: {
     ChromaDB,
     sentencize,
     moment,
-    uploadImage,
+    uploadImage(cfg.rootDirectory),
     cfg.cert
   );
 };
