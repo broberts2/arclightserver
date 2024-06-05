@@ -2,6 +2,7 @@ const setupStaticDirectories = require("./setupStaticDirectories");
 
 module.exports = async (
   HMLCDN: string,
+  handleFile: any,
   rootDirectory: string,
   port: number,
   publicURI: string,
@@ -26,7 +27,8 @@ module.exports = async (
   chokidar: any,
   ChromaDB: any,
   sentencize: any,
-  moment: any
+  moment: any,
+  uploadImage: any
 ) => {
   if (mongoose.connection.readyState < 1) {
     mongoose
@@ -148,7 +150,15 @@ module.exports = async (
   modules.recursiveLookup = recursiveLookup(modules);
   const r = runRoutes(modules);
   ["get", "post", "put", "delete"].map((s: string) =>
-    app[s]("/api/:endpoint", (req: any, res: any) => r(req, res))
+    app[s]("/api/:endpoint", (req: any, res: any) => {
+      uploadImage(req, res, async () => {
+        let Media;
+        if (req?.file?.path) {
+          Media = await handleFile(modules)("add", req.file.path);
+        }
+        r({ ...req, Media }, res);
+      });
+    })
   );
   modules.globals = { publicURI, HMLCDN };
   await models.user.deleteMany({
@@ -172,7 +182,12 @@ module.exports = async (
       ChromaDB,
       sentencize,
       moment,
+      uploadImage,
     })
   );
-  setupStaticDirectories(rootDirectory, fs, require("./mediaWatcher")(modules));
+  setupStaticDirectories(
+    rootDirectory,
+    fs,
+    require("./mediaWatcher")(modules, handleFile(modules))
+  );
 };

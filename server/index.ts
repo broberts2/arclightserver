@@ -16,7 +16,19 @@ const runRoutes = require("./runroutes");
 const jwt = require("jsonwebtoken");
 const Cryptr = require("cryptr");
 const moment = require("moment");
+const multer = require("multer");
 const sentencize = require("@stdlib/nlp-sentencize");
+
+const uploadImage = multer({
+  storage: multer.diskStorage({
+    destination: (req: any, file: any, callback: any) => {
+      callback(null, `${__dirname}/../media`);
+    },
+    filename: (req: any, file: any, callback: any) => {
+      callback(null, file.originalname);
+    },
+  }),
+}).single("image");
 
 if (typeof ReadableStream === "undefined") {
   const streams = require("web-streams-polyfill");
@@ -79,6 +91,58 @@ const __buildModels = (modules: any, models: any) => async () => {
       models[model._type] = mongoose.model(model._type, S);
     }
   });
+};
+
+const handleFile = (modules: any) => async (op: string, path: any) => {
+  if (!op) return;
+  const operation: any = ((op: string, _: string) => {
+    const filename = _.match(/[ \w-]+?(?=\.)/g);
+    if (!filename?.length) return;
+    return {
+      //@ts-ignore
+      filename: filename[0],
+      ext: _.split(".")[1],
+      op,
+    };
+  })(op, path);
+  if (op === "add") {
+    if (modules.mongoose.isValidObjectId(operation.filename)) {
+      // logic
+    } else {
+      const MediaRecord = await modules._models.media
+        .insertMany({
+          _system: true,
+          _parent: undefined,
+          _ext: operation.ext,
+          name: operation.filename,
+        })
+        .then((res: any) => res[0]);
+      if (!MediaRecord) throw new Error("Create Failed.");
+      await modules._models.media.updateOne(
+        { _id: MediaRecord._id },
+        {
+          img: `${modules.globals.publicURI}/static/media/${MediaRecord._id}.${operation.ext}`,
+          url: `${modules.globals.publicURI}/static/media/${MediaRecord._id}.${operation.ext}`,
+        }
+      );
+      try {
+        modules.fs.renameSync(
+          path,
+          `${modules.rootDirectory}/media/${MediaRecord._id}.${operation.ext}`
+        );
+        const R = await modules._models.media.findOne({ _id: MediaRecord._id });
+        return R;
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  } else {
+    if (modules.mongoose.isValidObjectId(operation.filename)) {
+      await modules._models.media.deleteOne({
+        _id: operation.filename,
+      });
+    }
+  }
 };
 
 const buildIntegrations =
@@ -297,6 +361,7 @@ module.exports = (cfg: {
   else server = require("http").createServer(app);
   setup(
     HMLCDN,
+    handleFile,
     cfg.rootDirectory,
     cfg.port,
     cfg.publicURI,
@@ -326,6 +391,7 @@ module.exports = (cfg: {
     chokidar,
     ChromaDB,
     sentencize,
-    moment
+    moment,
+    uploadImage
   );
 };

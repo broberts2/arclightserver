@@ -15,10 +15,15 @@ module.exports = (modules: any) => async (req: any, res: any) => {
         ? JSON.parse(req.body.metaData)
         : req.body.metaData;
     const apitoken =
-      (req.query && req.query.apitoken) ||
-      (req.body && (req.body.apitoken || metaData?.apitoken));
+      req?.query?.apitoken ||
+      req?.body?.apitoken ||
+      req?.query?.apikey ||
+      req?.body?.apikey ||
+      metaData?.apitoken;
     delete req.query.apitoken;
+    delete req.query.apikey;
     delete req.body.apitoken;
+    delete req.body.apikey;
     if (metaData) {
       delete metaData.apitoken;
       req.body.metaData =
@@ -32,7 +37,7 @@ module.exports = (modules: any) => async (req: any, res: any) => {
           return res
             .status(403)
             .send(
-              "Missing/invalid username, password, or API Token in request query/body."
+              "Missing/invalid username, password, or API key14 in request query/body."
             );
         const U = await modules._models.user.findOne({
           username: req.body.username,
