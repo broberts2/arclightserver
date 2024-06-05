@@ -346,19 +346,6 @@ module.exports = (cfg: {
   app.use(require("cors")());
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: false }));
-  let server;
-  if (cfg.cert)
-    server = require("https").createServer(
-      (() => {
-        const _cfg: any = {};
-        Object.keys(cfg.cert).map((k: string) => {
-          if (cfg.cert) _cfg[k] = fs.readFileSync(cfg.cert[k], "utf8");
-        });
-        return _cfg;
-      })(),
-      app
-    );
-  else server = require("http").createServer(app);
   setup(
     HMLCDN,
     handleFile,
@@ -371,7 +358,6 @@ module.exports = (cfg: {
     BaseModelMod,
     __buildModels,
     fs,
-    server,
     app,
     SocketIO,
     Jwt,
@@ -392,6 +378,7 @@ module.exports = (cfg: {
     ChromaDB,
     sentencize,
     moment,
-    uploadImage
+    uploadImage,
+    cfg.cert
   );
 };

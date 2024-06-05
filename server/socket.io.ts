@@ -1,11 +1,20 @@
 const transforms = require("./transforms");
 const _fs = require("fs");
 
-module.exports = (
-  server: any,
-  port: number,
-  modules: { [key: string]: any }
-) => {
+module.exports = (app: any, port: number, modules: { [key: string]: any }) => {
+  let server;
+  if (modules.cert)
+    server = require("https").createServer(
+      (() => {
+        const _cfg: any = {};
+        Object.keys(modules.cert).map((k: string) => {
+          if (modules.cert) _cfg[k] = fs.readFileSync(modules.cert[k], "utf8");
+        });
+        return _cfg;
+      })(),
+      app
+    );
+  else server = require("http").createServer(app);
   const io = require("socket.io")(server, {
     maxHttpBufferSize: 1e9,
     cors: {

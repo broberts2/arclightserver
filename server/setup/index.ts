@@ -12,7 +12,6 @@ module.exports = async (
   BaseModelMod: { [key: string]: any },
   __buildModels: Function,
   fs: any,
-  server: any,
   app: any,
   SocketIO: any,
   jwt: any,
@@ -28,7 +27,8 @@ module.exports = async (
   ChromaDB: any,
   sentencize: any,
   moment: any,
-  uploadImage: any
+  uploadImage: any,
+  cert?: { [key: string]: any }
 ) => {
   if (mongoose.connection.readyState < 1) {
     mongoose
@@ -165,7 +165,7 @@ module.exports = async (
     _unverified: true,
   });
   SocketIO(
-    server,
+    app,
     port,
     Object.assign(modules, {
       rootDirectory,
@@ -183,6 +183,7 @@ module.exports = async (
       sentencize,
       moment,
       uploadImage,
+      cert,
     })
   );
   setupStaticDirectories(
